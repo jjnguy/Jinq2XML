@@ -15,6 +15,18 @@ public class Jattr {
         this.a = a;
     }
 
+    public String name() {
+        return a.getNodeName();
+    }
+
+    public String value() {
+        return a.getNodeValue();
+    }
+
+    public Jelement parent(){
+        return new Jelement(a.getOwnerElement());
+    }
+    
     public ExtendedAttr extend() {
         return a;
     }

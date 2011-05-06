@@ -2,7 +2,6 @@ package xmlcomponents.complex;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
 import org.w3c.dom.TypeInfo;
 
 public class ExtendedAttr extends ExtendedNode implements Attr {
@@ -19,8 +18,8 @@ public class ExtendedAttr extends ExtendedNode implements Attr {
     }
 
     @Override
-    public Element getOwnerElement() {
-        return a.getOwnerElement();
+    public ExtendedElement getOwnerElement() {
+        return new ExtendedElement(a.getOwnerElement());
     }
 
     @Override
