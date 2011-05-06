@@ -23,8 +23,8 @@ public class Jattr {
         return a.getNodeValue();
     }
 
-    public Jelement parent(){
-        return new Jelement(a.getOwnerElement());
+    public Jode parent(){
+        return new Jode(a.getOwnerElement());
     }
     
     public ExtendedAttr extend() {
