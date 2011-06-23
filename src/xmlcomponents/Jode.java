@@ -1,5 +1,4 @@
 package xmlcomponents;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +16,28 @@ public class Jode {
 
 	public Jode(ExtendedNode n) {
 		this.n = n;
+		v = n.getTextContent();
+	}
+
+	public final String v;
+
+	public String value() {
+		return n.getTextContent();
+	}
+
+	public Jode single() {
+		JodeList children = children();
+		if (children.size() != 1)
+			throw new JinqException("Call to single() did not return a single result");
+		return new Jode(children.extend().item(0));
+	}
+
+	public Jode single(String nodeName) {
+		return children().single(nodeName);
+	}
+
+	public Jode single(JodeFilter filter) {
+		return children().single(filter);
 	}
 
 	public JodeList children() {

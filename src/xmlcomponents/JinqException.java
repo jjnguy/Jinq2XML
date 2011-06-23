@@ -1,5 +1,4 @@
 package xmlcomponents;
-
 public class JinqException extends RuntimeException {
 
     /**

@@ -1,5 +1,4 @@
 package xmlcomponents;
-
 import org.w3c.dom.Attr;
 
 import xmlcomponents.complex.ExtendedAttr;
