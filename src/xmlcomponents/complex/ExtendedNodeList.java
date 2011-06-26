@@ -7,6 +7,7 @@ import java.util.List;
 import org.w3c.dom.NodeList;
 
 import xmlcomponents.JinqException;
+import xmlcomponents.Jode;
 import xmlcomponents.JodeFilter;
 
 public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
@@ -54,8 +55,8 @@ public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
 	public ExtendedNodeList filter(final String nodeName) {
 		return this.filter(new JodeFilter() {
 			@Override
-			public boolean accept(ExtendedNode j) {
-				return j.getNodeName().equals(nodeName);
+			public boolean accept(Jode j) {
+				return j.extend().getNodeName().equals(nodeName);
 			}
 		});
 	}
@@ -63,7 +64,7 @@ public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
 	public ExtendedNodeList filter(JodeFilter filter) {
 		List<ExtendedNode> result = new ArrayList<ExtendedNode>();
 		for (ExtendedNode j : this) {
-			if (filter.accept(j)) {
+			if (filter.accept(new Jode(j))) {
 				result.add(j);
 			}
 		}
