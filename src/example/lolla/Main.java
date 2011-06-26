@@ -16,7 +16,7 @@ import example.lolla.model.Event;
 
 public class Main {
    private static final String apiUrl = "http://api.dostuffmedia.com/";
-   private static final Proxy p = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("webproxy.int.westgroup.com", 80));
+   private static final Proxy p = null;
 
    public static void main(String[] args) throws MalformedURLException, IOException {
       List<Event> evts = events();
