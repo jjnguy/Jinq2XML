@@ -1,4 +1,4 @@
-package xmlcomponents.xpath;
+package xmlcomponents.manipulation.xpath;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;

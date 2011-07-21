@@ -8,6 +8,7 @@ import org.w3c.dom.NodeList;
 
 import xmlcomponents.complex.ExtendedNode;
 import xmlcomponents.complex.ExtendedNodeList;
+import xmlcomponents.manipulation.Xformer;
 
 /**
  * Represents a List of Jodes. Will usually be created by calling children() on a Jode.

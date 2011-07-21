@@ -7,7 +7,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
 import xmlcomponents.complex.ExtendedNode;
-import xmlcomponents.xpath.XPath;
+import xmlcomponents.manipulation.xpath.XPath;
 
 /**
  * Class representing a Node from an XML document

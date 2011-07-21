@@ -1,4 +1,6 @@
-package xmlcomponents;
+package xmlcomponents.manipulation;
+
+import xmlcomponents.Jode;
 
 /**
  * Interface for enabling Jodes to be transformed into Plain old Java objects

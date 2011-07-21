@@ -11,7 +11,7 @@ import java.util.List;
 
 import xmlcomponents.Jocument;
 import xmlcomponents.Jode;
-import xmlcomponents.Xformer;
+import xmlcomponents.manipulation.Xformer;
 import example.lolla.model.Event;
 
 public class Main {
