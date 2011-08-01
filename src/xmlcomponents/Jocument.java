@@ -1,6 +1,9 @@
 package xmlcomponents;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 
 import org.w3c.dom.Document;
@@ -47,31 +50,35 @@ public class Jocument extends Jode {
       return new Jocument(ExtendedDocument.load(fileLocation));
    }
 
-	public static Jode load(String fileLocation, String rootName) {
-		return load(fileLocation).single(rootName);
-	}
+   public static Jode load(String fileLocation, String rootName) {
+      return load(fileLocation).single(rootName);
+   }
 
-	public static Jocument load(URL in) {
-		try {
-			return load(in.openStream());
-		} catch (IOException e) {
-			throw new JinqException(e);
-		}
-	}
+   public static Jocument load(URL in) {
+      try {
+         return load(in.openStream());
+      } catch (IOException e) {
+         throw new JinqException(e);
+      }
+   }
 
-	public static Jode load(URL in, String rootNode) {
-		try {
-			return load(in.openStream(), rootNode);
-		} catch (IOException e) {
-			throw new JinqException(e);
-		}
-	}
+   public static Jode load(URL in, String rootNode) {
+      try {
+         return load(in.openStream(), rootNode);
+      } catch (IOException e) {
+         throw new JinqException(e);
+      }
+   }
 
-	public static Jocument load(InputStream in) {
-		return new Jocument(ExtendedDocument.load(in));
-	}
+   public static Jocument load(InputStream in) {
+      return new Jocument(ExtendedDocument.load(in));
+   }
 
-	public static Jode load(InputStream in, String rootNode) {
-		return new Jocument(ExtendedDocument.load(in)).single(rootNode);
-	}
+   public static Jode load(InputStream in, String rootNode) {
+      return new Jocument(ExtendedDocument.load(in)).single(rootNode);
+   }
+
+   public static Jocument parse(String xml) {
+      return Jocument.load(new ByteArrayInputStream(xml.getBytes()));
+   }
 }
