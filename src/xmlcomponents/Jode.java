@@ -130,10 +130,22 @@ public class Jode {
       return new JodeList(node.children(nodeName));
    }
 
+   /**
+    * Finds the first child of this Jode
+    * 
+    * @return the first child of this Jode, or null if this element has no children
+    */
    public Jode first() {
       return children().first();
    }
 
+   /**
+    * Finds the first child node that matches the given node name
+    * 
+    * @param nodeName
+    *           the node name to match
+    * @return the first child node to match the given node name, or null otherwise
+    */
    public Jode first(String nodeName) {
       return children().first(nodeName);
    }

@@ -91,6 +91,11 @@ public class JodeList implements Iterable<Jode> {
       return new Jode(l.single(nodeName));
    }
 
+   /**
+    * Gets the first element of the list
+    * 
+    * @return the first element of this list, or null if the list has no children
+    */
    public Jode first() {
       if (size() <= 0)
          return null;
@@ -106,6 +111,13 @@ public class JodeList implements Iterable<Jode> {
       return null;
    }
 
+   /**
+    * Gets the first element of the list with the given node name
+    * 
+    * @param nodeName
+    *           the node name to match
+    * @return the first child matching the given name, or null if one didn't exist
+    */
    public Jode first(final String nodeName) {
       return first(new JodeFilter() {
          @Override
@@ -218,7 +230,7 @@ public class JodeList implements Iterable<Jode> {
 
          @Override
          public void remove() {
-            backingList.remove();
+            throw new UnsupportedOperationException("You are not allowed to remove jodes fron a list");
          }
       };
    }

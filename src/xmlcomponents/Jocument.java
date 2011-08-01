@@ -3,7 +3,6 @@ package xmlcomponents;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.URL;
 
 import org.w3c.dom.Document;
