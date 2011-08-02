@@ -56,12 +56,117 @@ public class Jode {
    public final String v;
 
    /**
-    * Gets the text content of thsi node
+    * Will give you all of the attributes defined in this node
     * 
-    * @return the text inside this node
+    * @return a list of the defined attributes
     */
-   public String value() {
-      return node.getTextContent();
+   public List<Jattr> attributes() {
+      List<Jattr> jattrs = new ArrayList<Jattr>();
+      NamedNodeMap attributes = node.getAttributes();
+      if (attributes == null)
+         return jattrs;
+      for (int i = 0; i < attributes.getLength(); i++) {
+         jattrs.add(new Jattr((Attr) attributes.item(i)));
+      }
+      return jattrs;
+   }
+
+   /**
+    * Will give you the attribute in this node with the given name. Throws an exception if this attribute wasn't defined
+    * 
+    * @param name
+    *           the name of the attribute to find
+    * @return the attribute with the given name
+    */
+   public Jattr attribute(String name) {
+      return attribute(name, false);
+   }
+
+   /**
+    * Will give you the attribute in this node with the given name. Throws an exception or returns null if this
+    * attribute wasn't defined
+    * 
+    * @param name
+    *           the name of the attribute to find
+    * @param polite
+    *           whether or not to throw an exception or return null in the case of a missing attribute
+    * @return the attribute with the given name
+    */
+   public Jattr attribute(String name, boolean polite) {
+      for (Jattr a : attributes()) {
+         if (a.name().equals(name))
+            return a;
+      }
+      if (polite)
+         return null;
+      else
+         throw new JinqException("This node didn't containg an attribute with the name: " + name);
+   }
+
+   /**
+    * Gives you all of the children of this node
+    * 
+    * @return a JodeList of this node's direct children
+    */
+   public JodeList children() {
+      return new JodeList(node.children());
+   }
+
+   /**
+    * Will give you all of the children of this node that match the given name
+    * 
+    * @param nodeName
+    *           name of the nodes to return
+    * @return every child of this node that matches the given name
+    */
+   public JodeList children(String nodeName) {
+      return new JodeList(node.children(nodeName));
+   }
+
+   /**
+    * Will give you all of the children of this node that match the given filter
+    * 
+    * @param filter
+    *           the filter to apply to the children of this node
+    * @return every child of this node that matches the given filter
+    */
+   public JodeList children(JodeFilter filter) {
+      return new JodeList(node.children(filter));
+   }
+
+   /**
+    * Uses an Xpath string to collect a set of nodes.
+    * 
+    * @param path
+    *           the xpath to traverse
+    * @return a list of matching nodes
+    */
+   public JodeList find(String path) {
+      return new XPath(path).find(this);
+   }
+
+   /**
+    * Finds the first child of this Jode
+    * 
+    * @return the first child of this Jode, or null if this element has no children
+    */
+   public Jode first() {
+      return children().first();
+   }
+
+   /**
+    * Finds the first child node that matches the given node name
+    * 
+    * @param nodeName
+    *           the node name to match
+    * @return the first child node to match the given node name, or null otherwise
+    */
+   public Jode first(String nodeName) {
+      return children().first(nodeName);
+   }
+
+   public Jode first(JodeFilter filter) {
+      return children().first(filter);
    }
 
    /**
@@ -99,102 +204,9 @@ public class Jode {
       return children().single(filter);
    }
 
-   /**
-    * Gives you all of the children of this node
-    * 
-    * @return a JodeList of this node's direct children
-    */
-   public JodeList children() {
-      return new JodeList(node.children());
-   }
-
-   /**
-    * Will give you all of the children of this node that match the given filter
-    * 
-    * @param filter
-    *           the filter to apply to the children of this node
-    * @return every child of this node that matches the given filter
-    */
-   public JodeList children(JodeFilter filter) {
-      return new JodeList(node.children(filter));
-   }
-
-   /**
-    * Will give you all of the children of this node that match the given name
-    * 
-    * @param nodeName
-    *           name of the nodes to return
-    * @return every child of this node that matches the given name
-    */
-   public JodeList children(String nodeName) {
-      return new JodeList(node.children(nodeName));
-   }
-
-   /**
-    * Finds the first child of this Jode
-    * 
-    * @return the first child of this Jode, or null if this element has no children
-    */
-   public Jode first() {
-      return children().first();
-   }
-
-   /**
-    * Finds the first child node that matches the given node name
-    * 
-    * @param nodeName
-    *           the node name to match
-    * @return the first child node to match the given node name, or null otherwise
-    */
-   public Jode first(String nodeName) {
-      return children().first(nodeName);
-   }
-
-   public Jode first(JodeFilter filter) {
-      return children().first(filter);
-   }
-
-   /**
-    * Will give you the attribute in this node with the given name. Throws an exception if this attribute wasn't defined
-    * 
-    * @param name
-    *           the name of the attribute to find
-    * @return the attribute with the given name
-    */
-   public Jattr attribute(String name) {
-      return attribute(name, false);
-   }
-
-   /**
-    * Will give you the attribute in this node with the given name. Throws an exception or returns null if this
-    * attribute wasn't defined
-    * 
-    * @param name
-    *           the name of the attribute to find
-    * @param polite
-    *           whether or not to throw an exception or return null in the case of a missing attribute
-    * @return the attribute with the given name
-    */
-   public Jattr attribute(String name, boolean polite) {
-      for (Jattr a : attributes()) {
-         if (a.name().equals(name))
-            return a;
-      }
-      if (polite)
-         return null;
-      else
-         throw new JinqException("This node didn't containg an attribute with the name: " + name);
-   }
-
-   /**
-    * Uses an Xpath string to collect a set of nodes.
-    * 
-    * @param path
-    *           the xpath to traverse
-    * @return a list of matching nodes
-    */
-   public JodeList find(String path) {
-      return new XPath(path).find(this);
+   @Override
+   public String toString() {
+      return new JodeWriter(this).toString();
    }
 
    /**
@@ -209,24 +221,12 @@ public class Jode {
    }
 
    /**
-    * Will give you all of the attributes defined in this node
+    * Gets the text content of thsi node
     * 
-    * @return a list of the defined attributes
+    * @return the text inside this node
     */
-   public List<Jattr> attributes() {
-      List<Jattr> jattrs = new ArrayList<Jattr>();
-      NamedNodeMap attributes = node.getAttributes();
-      if (attributes == null)
-         return jattrs;
-      for (int i = 0; i < attributes.getLength(); i++) {
-         jattrs.add(new Jattr((Attr) attributes.item(i)));
-      }
-      return jattrs;
-   }
-
-   @Override
-   public String toString() {
-      return new JodeWriter(this).toString();
+   public String value() {
+      return node.getTextContent();
    }
 
    /**

@@ -35,14 +35,27 @@ public class JodeList implements Iterable<Jode> {
    }
 
    /**
-    * Gets the node at index i
+    * Performs the given action on each node
     * 
-    * @param i
-    *           the index to get the node at
-    * @return the node at index i
+    * @param a
+    *           the action to perform
     */
-   public Jode get(int i) {
-      return new Jode(l.item(i));
+   public void each(Action a) {
+      for (Jode j : this) {
+         a.act(j);
+      }
+   }
+
+   /**
+    * Performs the given action on each node
+    * 
+    * @param a
+    *           the action to perform
+    */
+   public void each(ActionWithIndex a) {
+      for (int i = 0; i < size(); i++) {
+         a.act(get(i), i);
+      }
    }
 
    /**
@@ -65,30 +78,6 @@ public class JodeList implements Iterable<Jode> {
     */
    public JodeList filter(String nodeName) {
       return new JodeList(l.filter(nodeName));
-   }
-
-   /**
-    * Will give you to single element of this list matching a given name. If there is more than one matching element,
-    * this will throw an {@link JinqException}.
-    * 
-    * @param filter
-    *           the filter to apply to this list
-    * @return the single node matching this filter
-    */
-   public Jode single(JodeFilter filter) {
-      return new Jode(l.single(filter));
-   }
-
-   /**
-    * Will return the only element of this list with the given node name. If there is more than one matching element,
-    * this will throw an {@link JinqException}.
-    * 
-    * @param nodeName
-    *           the name of the node to return
-    * @return the single node matching the given name
-    */
-   public Jode single(String nodeName) {
-      return new Jode(l.single(nodeName));
    }
 
    /**
@@ -128,36 +117,36 @@ public class JodeList implements Iterable<Jode> {
    }
 
    /**
-    * Gives the number of top-level Jode elements in this list
+    * Gets the node at index i
     * 
-    * @return the number of top-level Jode elements in this list
+    * @param i
+    *           the index to get the node at
+    * @return the node at index i
     */
-   public int size() {
-      return l.getLength();
+   public Jode get(int i) {
+      return new Jode(l.item(i));
    }
 
-   /**
-    * Performs the given action on each node
-    * 
-    * @param a
-    *           the action to perform
-    */
-   public void each(Action a) {
-      for (Jode j : this) {
-         a.act(j);
-      }
-   }
-
-   /**
-    * Performs the given action on each node
-    * 
-    * @param a
-    *           the action to perform
-    */
-   public void each(ActionWithIndex a) {
-      for (int i = 0; i < size(); i++) {
-         a.act(get(i), i);
-      }
+   @Override
+   public Iterator<Jode> iterator() {
+      return new Iterator<Jode>() {
+         private Iterator<ExtendedNode> backingList = JodeList.this.l.iterator();
+   
+         @Override
+         public boolean hasNext() {
+            return backingList.hasNext();
+         }
+   
+         @Override
+         public Jode next() {
+            return new Jode(backingList.next());
+         }
+   
+         @Override
+         public void remove() {
+            throw new UnsupportedOperationException("You are not allowed to remove jodes fron a list");
+         }
+      };
    }
 
    /**
@@ -194,6 +183,39 @@ public class JodeList implements Iterable<Jode> {
    }
 
    /**
+    * Will return the only element of this list with the given node name. If there is more than one matching element,
+    * this will throw an {@link JinqException}.
+    * 
+    * @param nodeName
+    *           the name of the node to return
+    * @return the single node matching the given name
+    */
+   public Jode single(String nodeName) {
+      return new Jode(l.single(nodeName));
+   }
+
+   /**
+    * Will give you to single element of this list matching a given name. If there is more than one matching element,
+    * this will throw an {@link JinqException}.
+    * 
+    * @param filter
+    *           the filter to apply to this list
+    * @return the single node matching this filter
+    */
+   public Jode single(JodeFilter filter) {
+      return new Jode(l.single(filter));
+   }
+
+   /**
+    * Gives the number of top-level Jode elements in this list
+    * 
+    * @return the number of top-level Jode elements in this list
+    */
+   public int size() {
+      return l.getLength();
+   }
+
+   /**
     * Will transform this JodeList into a List of the type specified in the XFormer
     * 
     * @param xform
@@ -211,27 +233,5 @@ public class JodeList implements Iterable<Jode> {
 
    public ExtendedNodeList extend() {
       return l;
-   }
-
-   @Override
-   public Iterator<Jode> iterator() {
-      return new Iterator<Jode>() {
-         private Iterator<ExtendedNode> backingList = JodeList.this.l.iterator();
-
-         @Override
-         public boolean hasNext() {
-            return backingList.hasNext();
-         }
-
-         @Override
-         public Jode next() {
-            return new Jode(backingList.next());
-         }
-
-         @Override
-         public void remove() {
-            throw new UnsupportedOperationException("You are not allowed to remove jodes fron a list");
-         }
-      };
    }
 }

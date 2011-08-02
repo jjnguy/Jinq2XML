@@ -12,7 +12,7 @@ import xmlcomponents.JodeFilter;
 
 public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
 
-   private List<ExtendedNode> jodes;
+   protected List<ExtendedNode> jodes;
 
    public ExtendedNodeList(NodeList list) {
       this(list, false);
@@ -28,7 +28,7 @@ public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
       }
    }
 
-   private ExtendedNodeList(List<ExtendedNode> jodes) {
+   public ExtendedNodeList(List<ExtendedNode> jodes) {
       this.jodes = jodes;
    }
 
