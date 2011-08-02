@@ -131,17 +131,17 @@ public class JodeList implements Iterable<Jode> {
    public Iterator<Jode> iterator() {
       return new Iterator<Jode>() {
          private Iterator<ExtendedNode> backingList = JodeList.this.l.iterator();
-   
+
          @Override
          public boolean hasNext() {
             return backingList.hasNext();
          }
-   
+
          @Override
          public Jode next() {
             return new Jode(backingList.next());
          }
-   
+
          @Override
          public void remove() {
             throw new UnsupportedOperationException("You are not allowed to remove jodes fron a list");
@@ -180,6 +180,43 @@ public class JodeList implements Iterable<Jode> {
          bldr.append(xformer.xform(j)).append(delim);
       }
       return bldr.substring(0, bldr.length() - delim.length());
+   }
+
+   /**
+    * Recursively finds all nodes with the given name
+    * 
+    * @param nodeName
+    *           the name of the node to search for
+    * @return a list of discovered nodes
+    */
+   public JodeList search(final String nodeName) {
+      return search(new JodeFilter() {
+         @Override
+         public boolean accept(Jode j) {
+            return j.n.equals(nodeName);
+         }
+      });
+   }
+
+   /**
+    * Recursively finds all nodes that match the given filter
+    * 
+    * @param filter
+    *           the filter to search for
+    * @return a list of discovered nodes
+    */
+   public JodeList search(JodeFilter filter) {
+      List<ExtendedNode> ret = new ArrayList<ExtendedNode>();
+      for (Jode j : this) {
+         if (filter.accept(j))
+            ret.add(j.extend());
+         else {
+            for (Jode j2 : j.children().search(filter)) {
+               ret.add(j2.extend());
+            }
+         }
+      }
+      return new JodeList(new ExtendedNodeList(ret));
    }
 
    /**

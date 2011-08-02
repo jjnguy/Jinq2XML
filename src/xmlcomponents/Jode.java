@@ -135,17 +135,6 @@ public class Jode {
    }
 
    /**
-    * Uses an Xpath string to collect a set of nodes.
-    * 
-    * @param path
-    *           the xpath to traverse
-    * @return a list of matching nodes
-    */
-   public JodeList find(String path) {
-      return new XPath(path).find(this);
-   }
-
-   /**
     * Finds the first child of this Jode
     * 
     * @return the first child of this Jode, or null if this element has no children
@@ -210,23 +199,34 @@ public class Jode {
    }
 
    /**
-    * Uses Xpath to traverse to the specified node.
-    * 
-    * @param path
-    *           the path to travel to
-    * @return the specified node
-    */
-   public Jode traverse(String path) {
-      return new XPath(path).traverse(this);
-   }
-
-   /**
     * Gets the text content of thsi node
     * 
     * @return the text inside this node
     */
    public String value() {
       return node.getTextContent();
+   }
+
+   /**
+    * Uses an Xpath string to collect a set of nodes.
+    * 
+    * @param path
+    *           the xpath to traverse
+    * @return a list of matching nodes
+    */
+   public JodeList xPathFind(String path) {
+      return new XPath(path).find(this);
+   }
+
+   /**
+    * Uses Xpath to traverse to the specified node.
+    * 
+    * @param path
+    *           the path to travel to
+    * @return the specified node
+    */
+   public Jode xPathTraverse(String path) {
+      return new XPath(path).traverse(this);
    }
 
    /**
