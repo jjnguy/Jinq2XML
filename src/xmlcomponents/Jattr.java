@@ -44,6 +44,15 @@ public class Jattr {
    public String value() {
       return a.getNodeValue();
    }
+   
+   /**
+    * Gives you the value of this attribute
+    * 
+    * @return the value of this attribute
+    */
+   public <T> T value(Converter<String, T> converter) {
+      return converter.convert(a.getNodeValue());
+   }
 
    /**
     * Gets you to the node that this attribute was defined in.
