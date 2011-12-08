@@ -104,6 +104,18 @@ public class Jode {
    }
 
    /**
+    * Returns whether or not a Jode has an attribute with the given name
+    * 
+    * @param name
+    *           the name to look for
+    * @return true if the attribute was found, false otherwise.
+    */
+   public boolean hasAttribute(String name) {
+      // if attribute() returns a value, then this jode has that attribute
+      return attribute(name, true) != null;
+   }
+
+   /**
     * Gives you all of the children of this node
     * 
     * @return a JodeList of this node's direct children
@@ -132,6 +144,28 @@ public class Jode {
     */
    public JodeList children(JodeFilter filter) {
       return new JodeList(node.children(filter));
+   }
+
+   /**
+    * Returns whether or not this node has a child with the given name
+    * 
+    * @param childName
+    *           the name of the child to look for
+    * @return true if the child was found, false otherwise.
+    */
+   public boolean hasSingleChild(String childName) {
+      return children(childName).size() == 1;
+   }
+
+   /**
+    * Returns whether or not this node has more than one child with the given name
+    * 
+    * @param childName
+    *           the name of the child to look for
+    * @return true if this node has 2 or more children with the given name, false otherwise.
+    */
+   public boolean hasMultipleChildren(String childName) {
+      return children(childName).size() > 1;
    }
 
    /**
