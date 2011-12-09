@@ -10,6 +10,8 @@ import java.util.Collection;
 import xmlcomponents.Converter;
 import xmlcomponents.Jattr;
 import xmlcomponents.Jode;
+import xmlcomponents.autoparse.annotation.XmlProperty;
+import xmlcomponents.autoparse.annotation.XmlProperty.XmlPropertyType;
 
 /**
  * Class for automatically parsing simple nodes with some attributes.
@@ -21,8 +23,7 @@ import xmlcomponents.Jode;
 public class AutoParser {
 
     /**
-     * Parses a node into the given class type.
-     * with the same name.
+     * Parses a node into the given class type. with the same name.
      * 
      * @param j
      * @param clazz
@@ -44,32 +45,41 @@ public class AutoParser {
         }
     }
 
-    public static Object resolveField(Field f, Jode j) throws IllegalAccessException, InstantiationException {
-      String fieldName = f.getName();
-      Class<?> type = f.getType();
-      if (j.hasAttribute(fieldName)) {
-         Jattr attr = j.attribute(fieldName);
-         Converter<String, Object> converter = determineConverter(type);
-         return attr.value(converter);
-      } else if (j.hasSingleChild(cammelToPascal(fieldName)) && !type.isInstance((Collection<?>) null)) {
-         Object complex = type.newInstance();
-         for (Field subF : complex.getClass().getDeclaredFields()) {
-            subF.setAccessible(true);
-            subF.set(complex, resolveField(subF, j.single(cammelToPascal(fieldName))));
-         }
-         return complex;
-      } else if (type.isInstance((new ArrayList()))) {
-         ArrayList<Object> values = new ArrayList<Object>();
-         ParameterizedType genericType = (ParameterizedType) f.getGenericType();
-         Class realGenericType_finally = (Class) genericType.getActualTypeArguments()[0];
-         for(Jode subJ : j.children(cammelToPascal(fieldName))){
-             values.add(parse(subJ, realGenericType_finally));
-         }
-         //System.err.println("We don't currently support collections...sorry. ('" + fieldName + "' in " + j.n + ")");
-         return values;
-      }
-      throw new IllegalArgumentException("Could not parse field named '" + fieldName + "' for jode named '" + j.n + "'");
-   }
+    public static Object resolveField(Field f, Jode j) throws IllegalAccessException,
+            InstantiationException {
+        String fieldName = f.getName();
+        Class<?> type = f.getType();
+        XmlProperty anno = f.getAnnotation(XmlProperty.class);
+        if (anno != null) {
+            if (anno.type() == XmlPropertyType.TEXT_NODE) {
+                return j.v;
+            }
+        } else if (j.hasAttribute(fieldName)) {
+            Jattr attr = j.attribute(fieldName);
+            Converter<String, Object> converter = determineConverter(type);
+            return attr.value(converter);
+        } else if (j.hasSingleChild(cammelToPascal(fieldName))
+                && !type.isInstance((Collection<?>) null)) {
+            Object complex = type.newInstance();
+            for (Field subF : complex.getClass().getDeclaredFields()) {
+                subF.setAccessible(true);
+                subF.set(complex, resolveField(subF, j.single(cammelToPascal(fieldName))));
+            }
+            return complex;
+        } else if (type.isInstance((new ArrayList()))) {
+            ArrayList<Object> values = new ArrayList<Object>();
+            ParameterizedType genericType = (ParameterizedType) f.getGenericType();
+            Class realGenericType_finally = (Class) genericType.getActualTypeArguments()[0];
+            for (Jode subJ : j.children(cammelToPascal(fieldName))) {
+                values.add(parse(subJ, realGenericType_finally));
+            }
+            // System.err.println("We don't currently support collections...sorry. ('" + fieldName +
+            // "' in " + j.n + ")");
+            return values;
+        }
+        throw new IllegalArgumentException("Could not parse field named '" + fieldName
+                + "' for jode named '" + j.n + "'");
+    }
 
     private static String cammelToPascal(String s) {
         return (s.charAt(0) + "").toUpperCase() + s.substring(1);
