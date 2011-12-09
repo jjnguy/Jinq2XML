@@ -9,9 +9,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XmlProperty {
 
-    public XmlPropertyType type();
+    public boolean optional() default false;
+    
+    public String valueName() default "";
+
+    public XmlPropertyType type() default XmlPropertyType.ANY_ELEMENT;
 
     public static enum XmlPropertyType {
-        TEXT_NODE
+        TEXT_NODE, ANY_ELEMENT
     }
 }

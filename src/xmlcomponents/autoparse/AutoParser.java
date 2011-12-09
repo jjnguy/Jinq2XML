@@ -45,15 +45,13 @@ public class AutoParser {
         }
     }
 
-    public static Object resolveField(Field f, Jode j) throws IllegalAccessException,
+    private static Object resolveField(Field f, Jode j) throws IllegalAccessException,
             InstantiationException {
-        String fieldName = f.getName();
         Class<?> type = f.getType();
         XmlProperty anno = f.getAnnotation(XmlProperty.class);
-        if (anno != null) {
-            if (anno.type() == XmlPropertyType.TEXT_NODE) {
-                return j.v;
-            }
+        String fieldName = getValueName(f);
+        if (anno != null && anno.type() == XmlPropertyType.TEXT_NODE) {
+            return j.v;
         } else if (j.hasAttribute(fieldName)) {
             Jattr attr = j.attribute(fieldName);
             Converter<String, Object> converter = determineConverter(type);
@@ -73,16 +71,30 @@ public class AutoParser {
             for (Jode subJ : j.children(cammelToPascal(fieldName))) {
                 values.add(parse(subJ, realGenericType_finally));
             }
-            // System.err.println("We don't currently support collections...sorry. ('" + fieldName +
-            // "' in " + j.n + ")");
             return values;
         }
-        throw new IllegalArgumentException("Could not parse field named '" + fieldName
-                + "' for jode named '" + j.n + "'");
+        if (anno == null || !anno.optional()) {
+            throw new IllegalArgumentException("Could not parse field named '" + fieldName
+                    + "' for jode named '" + j.n + "'");
+        }
+        return determineConverter(type).convert(null);
+    }
+
+    private static String getValueName(Field f) {
+        XmlProperty anno = f.getAnnotation(XmlProperty.class);
+        if (anno != null && !anno.valueName().equals("")) {
+            return anno.valueName();
+        } else {
+            return f.getName();
+        }
     }
 
     private static String cammelToPascal(String s) {
         return (s.charAt(0) + "").toUpperCase() + s.substring(1);
+    }
+
+    private static boolean empty(String s) {
+        return s == null || s.equals("");
     }
 
     private static Converter<String, Object> determineConverter(Class<?> type) {
@@ -97,6 +109,8 @@ public class AutoParser {
             return new Converter<String, Object>() {
                 @Override
                 public Object convert(String value) {
+                    if (empty(value))
+                        return 0;
                     return Integer.parseInt(value);
                 }
             };
@@ -104,6 +118,8 @@ public class AutoParser {
             return new Converter<String, Object>() {
                 @Override
                 public Object convert(String value) {
+                    if (empty(value))
+                        return 0;
                     return Long.parseLong(value);
                 }
             };
@@ -111,6 +127,8 @@ public class AutoParser {
             return new Converter<String, Object>() {
                 @Override
                 public Object convert(String value) {
+                    if (empty(value))
+                        return 0;
                     return Byte.parseByte(value);
                 }
             };
@@ -118,6 +136,8 @@ public class AutoParser {
             return new Converter<String, Object>() {
                 @Override
                 public Object convert(String value) {
+                    if (empty(value))
+                        return 0;
                     return Double.parseDouble(value);
                 }
             };
@@ -125,6 +145,8 @@ public class AutoParser {
             return new Converter<String, Object>() {
                 @Override
                 public Object convert(String value) {
+                    if (empty(value))
+                        return 0;
                     return Float.parseFloat(value);
                 }
             };
@@ -132,6 +154,8 @@ public class AutoParser {
             return new Converter<String, Object>() {
                 @Override
                 public Object convert(String value) {
+                    if (empty(value))
+                        return false;
                     return Boolean.parseBoolean(value);
                 }
             };
