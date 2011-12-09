@@ -1,6 +1,7 @@
 package xmlcomponents.autoparse;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,45 +20,31 @@ import xmlcomponents.Jode;
  */
 public class AutoParser {
 
-   /**
-    * Parses a node into the given class type. Only parses xml attributes into member variables with the same name.
-    * 
-    * @param j
-    * @param clazz
-    * @return
-    */
-   public static <T> T parse(Jode j, Class<T> clazz) {
-      T ret;
-      try {
-         ret = clazz.newInstance();
-         for (Field f : clazz.getDeclaredFields()) {
-            String fieldName = f.getName();
-            f.setAccessible(true);
-            f.set(ret, j.attribute(fieldName).value());
-         }
-         return ret;
-      } catch (Exception e) {
-         return null;
-      }
-   }
+    /**
+     * Parses a node into the given class type.
+     * with the same name.
+     * 
+     * @param j
+     * @param clazz
+     * @return the object represented by the xml structure
+     */
+    public static <T> T parse(Jode j, Class<T> clazz) {
+        T ret;
+        try {
+            ret = clazz.newInstance();
+            for (Field f : clazz.getDeclaredFields()) {
+                f.setAccessible(true);
+                Object fieldValue = resolveField(f, j);
+                f.set(ret, fieldValue);
+            }
+            return ret;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-   public static <T> T parseV2(Jode j, Class<T> clazz) {
-      T ret;
-      try {
-         ret = clazz.newInstance();
-         for (Field f : clazz.getDeclaredFields()) {
-            f.setAccessible(true);
-            Object fieldValue = resolveField(f, j);
-            f.set(ret, fieldValue);
-         }
-         return ret;
-      } catch (Exception e) {
-         e.printStackTrace();
-         return null;
-      }
-   }
-
-   public static Object resolveField(Field f, Jode j) throws IllegalAccessException, InstantiationException {
+    public static Object resolveField(Field f, Jode j) throws IllegalAccessException, InstantiationException {
       String fieldName = f.getName();
       Class<?> type = f.getType();
       if (j.hasAttribute(fieldName)) {
@@ -73,83 +60,87 @@ public class AutoParser {
          return complex;
       } else if (type.isInstance((new ArrayList()))) {
          ArrayList<Object> values = new ArrayList<Object>();
+         ParameterizedType genericType = (ParameterizedType) f.getGenericType();
+         Class realGenericType_finally = (Class) genericType.getActualTypeArguments()[0];
          for(Jode subJ : j.children(cammelToPascal(fieldName))){
-            
+             values.add(parse(subJ, realGenericType_finally));
          }
-         System.err.println("We don't currently support collections...sorry. ('" + fieldName + "' in " + j.n + ")");
+         //System.err.println("We don't currently support collections...sorry. ('" + fieldName + "' in " + j.n + ")");
          return values;
       }
       throw new IllegalArgumentException("Could not parse field named '" + fieldName + "' for jode named '" + j.n + "'");
    }
 
-   private static String cammelToPascal(String s) {
-      return (s.charAt(0) + "").toUpperCase() + s.substring(1);
-   }
+    private static String cammelToPascal(String s) {
+        return (s.charAt(0) + "").toUpperCase() + s.substring(1);
+    }
 
-   private static Converter<String, Object> determineConverter(Class<?> type) {
-      if (type.equals(String.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return value;
-            }
-         };
-      } else if (type.equals(Integer.class) || type.equals(int.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return Integer.parseInt(value);
-            }
-         };
-      } else if (type.equals(Long.class) || type.equals(long.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return Long.parseLong(value);
-            }
-         };
-      } else if (type.equals(Byte.class) || type.equals(byte.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return Byte.parseByte(value);
-            }
-         };
-      } else if (type.equals(Double.class) || type.equals(double.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return Double.parseDouble(value);
-            }
-         };
-      } else if (type.equals(Float.class) || type.equals(float.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return Float.parseFloat(value);
-            }
-         };
-      } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return Boolean.parseBoolean(value);
-            }
-         };
-      }
-      // Begin complex types
-      else if (type.equals(URL.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               try {
-                  return new URL(value);
-               } catch (MalformedURLException e) {
-                  throw new IllegalArgumentException("Could not convert the given value into a URL.");
-               }
-            }
-         };
-      }
-      throw new IllegalArgumentException("The type '" + type + "' is not supported in atribute parsing.");
-   }
+    private static Converter<String, Object> determineConverter(Class<?> type) {
+        if (type.equals(String.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return value;
+                }
+            };
+        } else if (type.equals(Integer.class) || type.equals(int.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return Integer.parseInt(value);
+                }
+            };
+        } else if (type.equals(Long.class) || type.equals(long.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return Long.parseLong(value);
+                }
+            };
+        } else if (type.equals(Byte.class) || type.equals(byte.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return Byte.parseByte(value);
+                }
+            };
+        } else if (type.equals(Double.class) || type.equals(double.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return Double.parseDouble(value);
+                }
+            };
+        } else if (type.equals(Float.class) || type.equals(float.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return Float.parseFloat(value);
+                }
+            };
+        } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    return Boolean.parseBoolean(value);
+                }
+            };
+        }
+        // Begin complex types
+        else if (type.equals(URL.class)) {
+            return new Converter<String, Object>() {
+                @Override
+                public Object convert(String value) {
+                    try {
+                        return new URL(value);
+                    } catch (MalformedURLException e) {
+                        throw new IllegalArgumentException(
+                                "Could not convert the given value into a URL.");
+                    }
+                }
+            };
+        }
+        throw new IllegalArgumentException("The type '" + type
+                + "' is not supported in atribute parsing.");
+    }
 }
