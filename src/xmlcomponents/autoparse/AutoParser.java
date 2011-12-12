@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import xmlcomponents.Converter;
 import xmlcomponents.Jattr;
@@ -56,19 +57,19 @@ public class AutoParser {
             Jattr attr = j.attribute(fieldName);
             Converter<String, Object> converter = determineConverter(type);
             return attr.value(converter);
-        } else if (j.hasSingleChild(cammelToPascal(fieldName))
+        } else if (j.hasSingleChild(fieldName)
                 && !type.isInstance((Collection<?>) null)) {
             Object complex = type.newInstance();
             for (Field subF : complex.getClass().getDeclaredFields()) {
                 subF.setAccessible(true);
-                subF.set(complex, resolveField(subF, j.single(cammelToPascal(fieldName))));
+                subF.set(complex, resolveField(subF, j.single(fieldName)));
             }
             return complex;
-        } else if (type.isInstance((new ArrayList()))) {
+        } else if (type.isInstance((List)(new ArrayList()))) {
             ArrayList<Object> values = new ArrayList<Object>();
             ParameterizedType genericType = (ParameterizedType) f.getGenericType();
             Class realGenericType_finally = (Class) genericType.getActualTypeArguments()[0];
-            for (Jode subJ : j.children(cammelToPascal(fieldName))) {
+            for (Jode subJ : j.children(fieldName)) {
                 values.add(parse(subJ, realGenericType_finally));
             }
             return values;

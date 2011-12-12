@@ -279,7 +279,7 @@ public class JodeList implements Iterable<Jode> {
      *            the type to transform into
      * @return a list of the passed in type
      */
-    public <T> List<T> xForm(final Class<T> clazz) {
+    public <T> List<T> xform(final Class<T> clazz) {
         return xform(new Xformer<T>() {
             @Override
             public T xform(Jode j) {
