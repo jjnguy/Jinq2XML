@@ -1,10 +1,8 @@
 package xmlcomponents.autoparse;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,7 @@ public class ClassCreation {
 
    public static void createClasses(Jode j, String destinationFolder) throws FileNotFoundException {
       new File(destinationFolder).mkdirs();
-      String classShell = "public class <className> {\r\n<properties>}\r\n";
+      String classShell = "import java.util.List;\r\npublic class <className> {\r\n<properties>}\r\n";
       String className = j.name();
       List<ClassProperties> properties = new ArrayList<ClassProperties>();
       for (Jattr jattr : j.attributes()) {
