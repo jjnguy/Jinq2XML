@@ -8,7 +8,7 @@ import org.w3c.dom.UserDataHandler;
 
 import xmlcomponents.JodeFilter;
 
-public class ExtendedNode implements Node {
+public class ExtendedNode implements Node, Comparable<ExtendedNode> {
    private Node n;
 
    public ExtendedNode(Node n) {
@@ -218,5 +218,10 @@ public class ExtendedNode implements Node {
    @Override
    public Object setUserData(String key, Object data, UserDataHandler handler) {
       return n.setUserData(key, data, handler);
+   }
+
+   @Override
+   public int compareTo(ExtendedNode o) {
+      return this.getNodeName().compareTo(o.getNodeName());
    }
 }

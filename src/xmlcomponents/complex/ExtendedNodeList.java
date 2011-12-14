@@ -1,8 +1,11 @@
 package xmlcomponents.complex;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.NodeList;
 
@@ -30,6 +33,18 @@ public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
 
    public ExtendedNodeList(List<ExtendedNode> jodes) {
       this.jodes = jodes;
+   }
+
+   public ExtendedNodeList distinct() {
+      Set<String> names = new HashSet<String>();
+      for (ExtendedNode n : this) {
+         names.add(n.getNodeName());
+      }
+      List<ExtendedNode> result = new ArrayList<ExtendedNode>(names.size());
+      for (String name : names) {
+         result.add(this.filter(name).first());
+      }
+      return new ExtendedNodeList(result);
    }
 
    public ExtendedNode first() {
@@ -69,6 +84,10 @@ public class ExtendedNodeList implements NodeList, Iterable<ExtendedNode> {
          }
       }
       return new ExtendedNodeList(result);
+   }
+
+   public void sort() {
+      Collections.sort(jodes);
    }
 
    @Override

@@ -143,16 +143,6 @@ public class SimpleJodeListTest {
     }
 
     @Test
-    public void testSearchString() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testSearchJodeFilter() {
-        fail("Not yet implemented");
-    }
-
-    @Test
     public void testSingleString() {
         Jode result = list.single("singleItem");
         assertThat(result.n, equalTo("singleItem"));
@@ -186,10 +176,5 @@ public class SimpleJodeListTest {
         for (int i = 0; i < result.size(); i++){
             assertThat(result.get(i), equalTo(list.get(i).n));
         }
-    }
-
-    @Test
-    public void testXform_autoParser() {
-        fail("Not yet implemented");
     }
 }
