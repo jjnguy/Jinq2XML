@@ -79,7 +79,9 @@ public class AutoParser {
          throw new IllegalArgumentException("Could not parse field named '" + fieldName + "' for jode named '" + j.n
                + "'");
       }
-      return determineConverter(type).convert(null);
+      // By here, we know that the item we are trying to parse has not been able to be resolved, but it is optional, 
+      // so we just return null.
+      return null;
    }
 
    private static String getValueName(Field f) {
