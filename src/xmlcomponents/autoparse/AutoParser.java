@@ -63,7 +63,10 @@ public class AutoParser {
          Object complex = type.newInstance();
          for (Field subF : complex.getClass().getDeclaredFields()) {
             subF.setAccessible(true);
-            subF.set(complex, resolveField(subF, j.single(fieldName)));
+            Object resolvedResult = resolveField(subF, j.single(fieldName));
+            if (resolvedResult != null || !subF.getType().isPrimitive()) {
+               subF.set(complex, resolvedResult);
+            }
          }
          return complex;
       } else if (type.isInstance((List) (new ArrayList()))) {
@@ -79,7 +82,7 @@ public class AutoParser {
          throw new IllegalArgumentException("Could not parse field named '" + fieldName + "' for jode named '" + j.n
                + "'");
       }
-      // By here, we know that the item we are trying to parse has not been able to be resolved, but it is optional, 
+      // By here, we know that the item we are trying to parse has not been able to be resolved, but it is optional,
       // so we just return null.
       return null;
    }
