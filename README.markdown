@@ -1,4 +1,4 @@
-==Intro==
+##Intro
 
 Parsing XML in Java sucks.  Jinq2XML aims to make it better.
 
@@ -10,7 +10,7 @@ The current scope of the library is for reading XML only.  Future iterations of 
 
 In general, the library is loosely based off of .Net's LINQ to XML and JQuery-like method chaining.
 
-==Features==
+##Features
 
 The goal of this library is not to be the most feature-full XML parsing library out there.  That said, here is a short list of some of the features this library provides:
 
@@ -20,21 +20,21 @@ The goal of this library is not to be the most feature-full XML parsing library 
   * XPath functionality
   * JQuery-like chaining
   * Linq2XML-like syntax
-  * Automatically parse xml into Classes
+  * Automatically parse xml into Classes (beta)
   * Generate source classes from XML (super beta)
 
 Those are the main features of the library.  Any requests for more functionality should be sent to the owner of the project.
 
-==Getting Started==
+##Getting Started
 
 To begin call `Jocument.load()` and either give it an `InputStream` or a file location, or use `Jocument.parse()` and give it a `String` containing valid XML.  Then start calling methods on the `Jocument`.  Everything should 'just work' without any configuration or setup.
 
-==More Info!==
+##More Info!
 
 Jinq2XML is essentially a wrapper around Java's built-in DOM XML parser.  All Jinq objects are backed by Java's DOM objects. (i.e Jocument is backed by a Document)
 
 Also, the naming convention of prefixing each type with a 'J' comes from the word 'Java,' not my name.
 
-==Feedback==
+##Feedback
 
 Please email me at jjnguy13 at gmail with any feedback you may have on this library.
