@@ -1,6 +1,5 @@
 package xmlcomponents;
 
-
 /**
  * Interface for defining criteria for filtering a list of nodes
  * 
@@ -16,4 +15,5 @@ public interface JodeFilter {
     * @return <code>true</code> if this node passes the filter, and <code>false</code> if it does not
     */
    public boolean accept(Jode j);
+   
 }

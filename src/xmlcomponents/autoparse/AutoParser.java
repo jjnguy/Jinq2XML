@@ -17,18 +17,18 @@ import xmlcomponents.autoparse.annotation.XmlProperty.XmlPropertyType;
 /**
  * Class for automatically parsing simple nodes with some attributes.
  * 
- * This parser is not smart.
+ * This parser is not smart.  It is also not fully developed.
  * 
  * @author Justin Nelson
  */
 public class AutoParser {
 
    /**
-    * Parses a node into the given class type. with the same name. Use the XmlProperty annotation to customize how this
+    * Parses a node into the given class type. with the same name. Use the {@link XmlProperty} annotation to customize how this
     * parses your file.
     * 
     * @param j
-    *           the Jode to parse
+    *           the {@link Jode} to parse
     * @param clazz
     *           the type to parse the Jode (j) into
     * @return the object represented by the xml structure
@@ -94,10 +94,6 @@ public class AutoParser {
       } else {
          return f.getName();
       }
-   }
-
-   private static String cammelToPascal(String s) {
-      return (s.charAt(0) + "").toUpperCase() + s.substring(1);
    }
 
    private static boolean empty(String s) {

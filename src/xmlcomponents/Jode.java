@@ -20,7 +20,7 @@ import xmlcomponents.output.JodeWriter;
  */
 public class Jode implements Comparable<Jode> {
    private ExtendedNode node;
-
+   
    /**
     * Creates a new Jode from the given backing node
     * 
@@ -30,23 +30,23 @@ public class Jode implements Comparable<Jode> {
    public Jode(Node n) {
       this(new ExtendedNode(n));
    }
-
+   
    Jode(ExtendedNode node) {
       this.node = node;
       this.v = node.getTextContent();
       this.n = node.getNodeName();
    }
-
+   
    /**
     * Convenience member for accessing the name of this node
     */
    public final String n;
-
+   
    /**
     * Convenience member for accessing the text of this node
     */
    public final String v;
-
+   
    /**
     * Gets the name of this Jode
     * 
@@ -55,7 +55,7 @@ public class Jode implements Comparable<Jode> {
    public final String name() {
       return node.getNodeName();
    }
-
+   
    /**
     * Will give you all of the attributes defined in this node
     * 
@@ -71,7 +71,7 @@ public class Jode implements Comparable<Jode> {
       }
       return jattrs;
    }
-
+   
    /**
     * Will give you the attribute in this node with the given name. Throws an exception if this attribute wasn't defined
     * 
@@ -82,7 +82,7 @@ public class Jode implements Comparable<Jode> {
    public Jattr attribute(String name) {
       return attribute(name, false);
    }
-
+   
    /**
     * Will give you the attribute in this node with the given name. Throws an exception or returns null if this
     * attribute wasn't defined
@@ -103,7 +103,7 @@ public class Jode implements Comparable<Jode> {
       else
          throw new JinqException("This node didn't containg an attribute with the name: " + name);
    }
-
+   
    /**
     * Returns whether or not a Jode has an attribute with the given name
     * 
@@ -115,7 +115,7 @@ public class Jode implements Comparable<Jode> {
       // if attribute() returns a value, then this jode has that attribute
       return attribute(name, true) != null;
    }
-
+   
    /**
     * Gives you all of the children of this node
     * 
@@ -124,7 +124,7 @@ public class Jode implements Comparable<Jode> {
    public JodeList children() {
       return new JodeList(node.children());
    }
-
+   
    /**
     * Will give you all of the children of this node that match the given name
     * 
@@ -135,7 +135,7 @@ public class Jode implements Comparable<Jode> {
    public JodeList children(String nodeName) {
       return new JodeList(node.children(nodeName));
    }
-
+   
    /**
     * Will give you all of the children of this node that match the given filter
     * 
@@ -146,7 +146,7 @@ public class Jode implements Comparable<Jode> {
    public JodeList children(JodeFilter filter) {
       return new JodeList(node.children(filter));
    }
-
+   
    /**
     * Returns whether or not this node has a child with the given name
     * 
@@ -157,7 +157,7 @@ public class Jode implements Comparable<Jode> {
    public boolean hasSingleChild(String childName) {
       return children(childName).size() == 1;
    }
-
+   
    /**
     * Returns whether or not this node has more than one child with the given name
     * 
@@ -168,7 +168,7 @@ public class Jode implements Comparable<Jode> {
    public boolean hasMultipleChildren(String childName) {
       return children(childName).size() > 1;
    }
-
+   
    /**
     * Finds the first child of this Jode
     * 
@@ -177,7 +177,7 @@ public class Jode implements Comparable<Jode> {
    public Jode first() {
       return children().first();
    }
-
+   
    /**
     * Finds the first child node that matches the given node name
     * 
@@ -188,7 +188,7 @@ public class Jode implements Comparable<Jode> {
    public Jode first(String nodeName) {
       return children().first(nodeName);
    }
-
+   
    /**
     * Finds the first child node that matches the given filter
     * 
@@ -199,7 +199,7 @@ public class Jode implements Comparable<Jode> {
    public Jode first(JodeFilter filter) {
       return children().first(filter);
    }
-
+   
    /**
     * If this node has one child, this will give you that child. Otherwise it will throw a new exception.
     * 
@@ -212,7 +212,7 @@ public class Jode implements Comparable<Jode> {
          throw new JinqException("Call to single() did not return a single result");
       return new Jode(children.extend().item(0));
    }
-
+   
    /**
     * Equivalent to calling children().single(nodeName). In fact, that's exactly what this method does. This returns the
     * only item that matches the given node name. Will throw an exception if more than one or no item matches.
@@ -224,7 +224,7 @@ public class Jode implements Comparable<Jode> {
    public Jode single(String nodeName) {
       return children().single(nodeName);
    }
-
+   
    /**
     * Equivalent to calling children().single(filter). In fact, that's exactly what this method does. This returns the
     * only item that matches the given filter. Will throw an exception if more than one or no item matches.
@@ -236,17 +236,19 @@ public class Jode implements Comparable<Jode> {
    public Jode single(JodeFilter filter) {
       return children().single(filter);
    }
-
+   
    @Override
    public String toString() {
       return new JodeWriter(this).toString();
    }
-
+   
    /**
     * This parses this xml node (and children) into an instance of the given class. In order for this to work, the given
     * type and all types of it's member variables must have a no argument constructor. All types must also only have
     * fields that are primitives, strings, or (array)lists. I'm sure there are other assumptions I made that I'm leaving
     * out.
+    * 
+    * This method is probably not quite ready for prime time.
     * 
     * @param <T>
     *           the type to parse this Jode into
@@ -257,7 +259,7 @@ public class Jode implements Comparable<Jode> {
    public <T> T toObject(Class<T> clazz) {
       return AutoParser.parse(this, clazz);
    }
-
+   
    /**
     * Gets the text content of this node
     * 
@@ -266,7 +268,7 @@ public class Jode implements Comparable<Jode> {
    public String value() {
       return node.getTextContent();
    }
-
+   
    /**
     * Uses an Xpath string to collect a set of nodes.
     * 
@@ -277,7 +279,7 @@ public class Jode implements Comparable<Jode> {
    public JodeList xPathFind(String path) {
       return new XPath(path).find(this);
    }
-
+   
    /**
     * Uses Xpath to traverse to the specified node.
     * 
@@ -288,7 +290,7 @@ public class Jode implements Comparable<Jode> {
    public Jode xPathTraverse(String path) {
       return new XPath(path).traverse(this);
    }
-
+   
    /**
     * Provided so people can use the full functionality of a Node if they want.
     * 
@@ -297,7 +299,7 @@ public class Jode implements Comparable<Jode> {
    public ExtendedNode extend() {
       return node;
    }
-
+   
    @Override
    public int compareTo(Jode arg0) {
       return this.extend().compareTo(arg0.extend());

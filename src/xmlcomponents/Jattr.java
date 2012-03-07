@@ -12,7 +12,7 @@ import xmlcomponents.complex.ExtendedAttr;
  */
 public class Jattr {
    private ExtendedAttr a;
-
+   
    /**
     * Convenience field for holding the attribute's name
     */
@@ -21,9 +21,9 @@ public class Jattr {
     * Convenience field for holding the attribute's value
     */
    public final String v;
-
+   
    /**
-    * Creates a new Jattr out of a backing Attr
+    * Creates a new Jattr out of a backing {@link Attr}
     * 
     * @param a
     *           the Attr to represent
@@ -31,22 +31,22 @@ public class Jattr {
    public Jattr(Attr a) {
       this(new ExtendedAttr(a));
    }
-
+   
    Jattr(ExtendedAttr a) {
       this.a = a;
       this.v = a.getNodeValue();
       this.n = a.getNodeName();
    }
-
+   
    /**
-    * Gives you new name of this attribute
+    * Gives you the name of this attribute
     * 
     * @return the name of the attribute
     */
    public String name() {
       return a.getNodeName();
    }
-
+   
    /**
     * Gives you the value of this attribute
     * 
@@ -55,16 +55,16 @@ public class Jattr {
    public String value() {
       return a.getNodeValue();
    }
-
+   
    /**
-    * Gives you the value of this attribute
+    * Gives you the value of this attribute after applying the supplied {@link Converter}
     * 
     * @return the value of this attribute
     */
    public <T> T value(Converter<String, T> converter) {
       return converter.convert(a.getNodeValue());
    }
-
+   
    /**
     * Gets you to the node that this attribute was defined in.
     * 
@@ -73,11 +73,11 @@ public class Jattr {
    public Jode parent() {
       return new Jode(a.getOwnerElement());
    }
-
+   
    public ExtendedAttr extend() {
       return a;
    }
-
+   
    @Override
    public String toString() {
       return name() + " = " + value();

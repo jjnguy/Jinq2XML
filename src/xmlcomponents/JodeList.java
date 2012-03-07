@@ -3,7 +3,6 @@ package xmlcomponents;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 
 import org.w3c.dom.NodeList;
 
@@ -12,17 +11,17 @@ import xmlcomponents.complex.ExtendedNodeList;
 import xmlcomponents.manipulation.Xformer;
 
 /**
- * Represents a List of Jodes. Will usually be created by calling children() on a Jode.
+ * Represents a List of {@link Jode} . Will usually be created by calling <code>children()</code> on a Jode.
  * 
  * @author Justin Nelson
  * 
  */
 public class JodeList implements Iterable<Jode> {
-
+   
    private ExtendedNodeList l;
-
+   
    /**
-    * Creates a JodeList out of a backing NodeList
+    * Creates a {@link JodeList} out of a backing {@link NodeList}
     * 
     * @param l
     *           the node list to represent
@@ -30,20 +29,42 @@ public class JodeList implements Iterable<Jode> {
    public JodeList(NodeList l) {
       this(new ExtendedNodeList(l));
    }
-
+   
    JodeList(ExtendedNodeList l) {
       this.l = l;
    }
-
+   
    /**
     * Returns a new JodeList containing one node of each name
     * 
-    * @return
+    * @return a JodeList containing only distinct elements. Will select the first node with a given name in the list.
     */
    public JodeList distinct() {
       return new JodeList(l.distinct());
    }
-
+   
+   /**
+    * Returns a new JodeList containing only distinct nodes as determined by the parameter passed into the method.
+    * 
+    * @return a JodeList containing only distinct elements.
+    */
+   public JodeList distinct(JodEqualityComparer comparer) {
+      List<ExtendedNode> results = new ArrayList<ExtendedNode>();
+      for (Jode j : this) {
+         boolean contains = false;
+         for (ExtendedNode alreadyIn : results) {
+            if (comparer.equal(j, new Jode(alreadyIn))) {
+               contains = true;
+               break;
+            }
+         }
+         if (!contains) {
+            results.add(j.extend());
+         }
+      }
+      return new JodeList(new ExtendedNodeList(results));
+   }
+   
    /**
     * Performs the given action on each node
     * 
@@ -55,7 +76,7 @@ public class JodeList implements Iterable<Jode> {
          a.act(j);
       }
    }
-
+   
    /**
     * Performs the given action on each node
     * 
@@ -67,7 +88,7 @@ public class JodeList implements Iterable<Jode> {
          a.act(get(i), i);
       }
    }
-
+   
    /**
     * Will return a JodeList containing only nodes that matched the filter criteria
     * 
@@ -78,7 +99,7 @@ public class JodeList implements Iterable<Jode> {
    public JodeList filter(JodeFilter filter) {
       return new JodeList(l.filter(filter));
    }
-
+   
    /**
     * Will return a JodeList containing only nodes that match the given node name
     * 
@@ -89,7 +110,7 @@ public class JodeList implements Iterable<Jode> {
    public JodeList filter(String nodeName) {
       return new JodeList(l.filter(nodeName));
    }
-
+   
    /**
     * Gets the first element of the list
     * 
@@ -101,7 +122,7 @@ public class JodeList implements Iterable<Jode> {
       else
          return get(0);
    }
-
+   
    public Jode first(JodeFilter filter) {
       for (Jode j : this) {
          if (filter.accept(j))
@@ -109,7 +130,7 @@ public class JodeList implements Iterable<Jode> {
       }
       return null;
    }
-
+   
    /**
     * Gets the first element of the list with the given node name
     * 
@@ -125,7 +146,7 @@ public class JodeList implements Iterable<Jode> {
          }
       });
    }
-
+   
    /**
     * Gets the node at index i
     * 
@@ -136,29 +157,29 @@ public class JodeList implements Iterable<Jode> {
    public Jode get(int i) {
       return new Jode(l.item(i));
    }
-
+   
    @Override
    public Iterator<Jode> iterator() {
       return new Iterator<Jode>() {
-         private Iterator<ExtendedNode> backingList = JodeList.this.l.iterator();
-
+         private final Iterator<ExtendedNode> backingList = JodeList.this.l.iterator();
+         
          @Override
          public boolean hasNext() {
             return backingList.hasNext();
          }
-
+         
          @Override
          public Jode next() {
             return new Jode(backingList.next());
          }
-
+         
          @Override
          public void remove() {
             throw new UnsupportedOperationException("You are not allowed to remove jodes fron a list");
          }
       };
    }
-
+   
    /**
     * Joins a node list into a string with the given delimiter
     * 
@@ -174,7 +195,7 @@ public class JodeList implements Iterable<Jode> {
          }
       });
    }
-
+   
    /**
     * Joins a node list into a string with the given delimiter
     * 
@@ -191,7 +212,7 @@ public class JodeList implements Iterable<Jode> {
       }
       return bldr.substring(0, bldr.length() - delim.length());
    }
-
+   
    /**
     * Recursively finds all nodes with the given name
     * 
@@ -207,7 +228,7 @@ public class JodeList implements Iterable<Jode> {
          }
       });
    }
-
+   
    /**
     * Recursively finds all nodes that match the given filter
     * 
@@ -228,7 +249,7 @@ public class JodeList implements Iterable<Jode> {
       }
       return new JodeList(new ExtendedNodeList(ret));
    }
-
+   
    /**
     * Will return the only element of this list with the given node name. If there is more than one matching element,
     * this will throw an {@link JinqException}.
@@ -240,7 +261,7 @@ public class JodeList implements Iterable<Jode> {
    public Jode single(String nodeName) {
       return new Jode(l.single(nodeName));
    }
-
+   
    /**
     * Will give you to single element of this list matching a given name. If there is more than one matching element,
     * this will throw an {@link JinqException}.
@@ -252,7 +273,7 @@ public class JodeList implements Iterable<Jode> {
    public Jode single(JodeFilter filter) {
       return new Jode(l.single(filter));
    }
-
+   
    /**
     * Gives the number of top-level Jode elements in this list
     * 
@@ -261,14 +282,14 @@ public class JodeList implements Iterable<Jode> {
    public int size() {
       return l.getLength();
    }
-
+   
    /**
     * Sorts this list by Node name
     */
    public void sort() {
       l.sort();
    }
-
+   
    /**
     * Will transform this JodeList into a List of the type specified in the XFormer
     * 
@@ -277,16 +298,16 @@ public class JodeList implements Iterable<Jode> {
     * @return a List<T> of elements that were created from this JodeList
     */
    public <T> List<T> xform(Xformer<T> xform) {
-      List<T> ret = new ArrayList<T>();
+      List<T> ret = new ArrayList<T>(this.size());
       // For each element in this Jode list, apply the transform
       for (Jode j : this) {
          ret.add(xform.xform(j));
       }
       return ret;
    }
-
+   
    /**
-    * Will attempt to parse this list of nodes into the passed in type. See jode.toObject for more info.
+    * Will attempt to parse this list of nodes into the passed in type. See {@link Jode}.toObject for more info.
     * 
     * @param <T>
     *           the type to transform into
@@ -302,7 +323,7 @@ public class JodeList implements Iterable<Jode> {
          }
       });
    }
-
+   
    public ExtendedNodeList extend() {
       return l;
    }

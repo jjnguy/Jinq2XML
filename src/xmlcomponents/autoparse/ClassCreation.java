@@ -7,10 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xmlcomponents.Jattr;
+import xmlcomponents.Jocument;
 import xmlcomponents.Jode;
 
+/**
+ * Class used for generating Java classes out of XML files. The generated class files are designed to be used in
+ * conjunction with the {@link AutoParser}.
+ * 
+ * This is not quite ready for prime time...
+ * 
+ * @author jjnguy
+ */
 public class ClassCreation {
-
+   
+   /**
+    * Given a {@link Jode}, usually a {@link Jocument}, will generate class files used for eventually consuming the XML
+    * into objects.
+    * 
+    * @param j
+    *           the Jode to parse
+    * @param destinationFolder
+    *           the folder to save the generated class files
+    * @throws FileNotFoundException
+    */
    public static void createClasses(Jode j, String destinationFolder) throws FileNotFoundException {
       new File(destinationFolder).mkdirs();
       String imports = "";
@@ -59,7 +78,7 @@ public class ClassCreation {
       out.print(finalString);
       out.close();
    }
-
+   
    public static String determineTypeDescriptor(Jattr attr) {
       if (attr.v.equals("true") || attr.v.equals("false"))
          return "boolean";
@@ -75,11 +94,11 @@ public class ClassCreation {
       }
       return "String";
    }
-
+   
    private static class ClassProperties {
       final String name;
       final String typeDescriptor;
-
+      
       ClassProperties(String name, String typeDescriptor) {
          this.name = name;
          this.typeDescriptor = typeDescriptor;
