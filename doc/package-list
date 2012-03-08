@@ -1,0 +1,10 @@
+examples
+util.domain.jodeListTests
+xmlcomponents
+xmlcomponents.autoparse
+xmlcomponents.autoparse.annotation
+xmlcomponents.complex
+xmlcomponents.manipulation
+xmlcomponents.manipulation.xpath
+xmlcomponents.output
+xmlcomponents.serialization.toXml
