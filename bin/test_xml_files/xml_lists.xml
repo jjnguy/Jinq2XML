@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<list1>
+		<item attr="attr" first="true" />
+		<item attr="attr" />
+		<item attr="attr" />
+		<item attr="attr" idx="3" />
+		<item attr="attr" first="withText">Text</item>
+		<item attr="attr">Text</item>
+		<item attr="attr">Text</item>
+		<anotherItem attr="attr" first="true_2" />
+		<anotherItem attr="attr" />
+		<anotherItem attr="attr" />
+		<anotherItem attr="attr" />
+		<anotherItem attr="attr" />
+		<anotherItem attr="attr" />
+		<anotherItem attr="attr" />
+		<singleItem />
+	</list1>
+</root>

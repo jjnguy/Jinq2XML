@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root name="root" count="1">
+	<childList>
+		<child name="child0" color="red">text0</child>
+		<child name="child1" color="red">text1</child>
+		<child name="child2" color="red">text2</child>
+		<child name="child3" color="red">text3</child>
+	</childList>
+	<singleChild name="singleChildAttr">
+		<grandChild name="grandChildAttr">grandChildText</grandChild>
+	</singleChild>
+	<anotherNode first="true" />
+	<anotherNode first="false_1" />
+	<anotherNode first="false_2" />
+	<anotherNode first="false_3" />
+</root>
