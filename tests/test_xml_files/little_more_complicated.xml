@@ -1,0 +1,17 @@
+<Library>
+  <Genres>
+    <SciFi>
+      <Book title="A Wizzard Fights Evil">
+        A long time ago...
+      </Book>
+      <Book title="Magic and Stuff" />
+    </SciFi>
+    <NonFiction>
+      <Book title="Reptiles">Lizards rule</Book>
+      <Book title="Space and Time">It's complicated...</Book>
+      <Book title="Programming: for fun and profit!" />
+      <Magazine title="Zoobooks" issue="Code Monkeys" />
+      <Journal title="Boring PHD Thesis" />
+    </NonFiction>
+  </Genres>
+</Library>
