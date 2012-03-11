@@ -1,12 +1,22 @@
 package xmlcomponents.serialization.toXml;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * This is a very experimental class. I have actually never tried this...
+ * 
+ * @author jjnguy
+ * 
+ */
 public class JinqWriter {
-
-   public String toXML(Object toSerialize) {
+   /**
+    * This is a very experimental method. I have actually never tried this...
+    * 
+    */
+   public String toXML(Object toSerialize) throws IllegalArgumentException, IllegalAccessException {
       // base cases
       if (toSerialize instanceof String) {
          return "<String>" + toSerialize.toString() + "</String>";
@@ -31,7 +41,16 @@ public class JinqWriter {
          return ret.toString();
       } else {
          Class<?> clazzClass = toSerialize.getClass();
-         return null;
+         StringBuilder ret = new StringBuilder();
+         ret.append("<").append(clazzClass.getName()).append(">");
+         
+         Field[] fields = clazzClass.getDeclaredFields();
+         for (Field f : fields) {
+            ret.append(toXML(f.get(toSerialize)));
+         }
+         
+         ret.append("</").append(clazzClass.getName()).append(">");
+         return ret.toString();
       }
    }
 }

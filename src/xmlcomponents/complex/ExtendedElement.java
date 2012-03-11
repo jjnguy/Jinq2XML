@@ -113,6 +113,6 @@ public class ExtendedElement extends ExtendedNode implements Element {
 
     @Override
     public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException {
-        e.setIdAttributeNode(idAttr, isId);
-    }
+      e.setIdAttributeNode(idAttr, isId);
+   }
 }

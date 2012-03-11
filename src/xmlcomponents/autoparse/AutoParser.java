@@ -17,15 +17,15 @@ import xmlcomponents.autoparse.annotation.XmlProperty.XmlPropertyType;
 /**
  * Class for automatically parsing simple nodes with some attributes.
  * 
- * This parser is not smart.  It is also not fully developed.
+ * This parser is not smart. It is also not fully developed.
  * 
  * @author Justin Nelson
  */
 public class AutoParser {
-
+   
    /**
-    * Parses a node into the given class type. with the same name. Use the {@link XmlProperty} annotation to customize how this
-    * parses your file.
+    * Parses a node into the given class type. with the same name. Use the {@link XmlProperty} annotation to customize
+    * how this parses your file.
     * 
     * @param j
     *           the {@link Jode} to parse
@@ -48,7 +48,7 @@ public class AutoParser {
          return null;
       }
    }
-
+   
    private static Object resolveField(Field f, Jode j) throws IllegalAccessException, InstantiationException {
       Class<?> type = f.getType();
       XmlProperty anno = f.getAnnotation(XmlProperty.class);
@@ -86,7 +86,7 @@ public class AutoParser {
       // so we just return null.
       return null;
    }
-
+   
    private static String getValueName(Field f) {
       XmlProperty anno = f.getAnnotation(XmlProperty.class);
       if (anno != null && !anno.valueName().equals("")) {
@@ -95,11 +95,11 @@ public class AutoParser {
          return f.getName();
       }
    }
-
+   
    private static boolean empty(String s) {
       return s == null || s.equals("");
    }
-
+   
    private static Converter<String, Object> determineConverter(Class<?> type) {
       if (type.equals(String.class)) {
          return new Converter<String, Object>() {

@@ -20,9 +20,8 @@ import xmlcomponents.JodeList;
  */
 public class XPath {
    private static final XPathFactory xFact = XPathFactory.newInstance();
-   private String path;
    private XPathExpression xpres;
-
+   
    /**
     * Create a new XPath from the given path
     * 
@@ -31,13 +30,12 @@ public class XPath {
     */
    public XPath(String path) {
       try {
-         this.path = path;
          xpres = xFact.newXPath().compile(path);
       } catch (XPathExpressionException e) {
          throw new JinqException(e);
       }
    }
-
+   
    /**
     * Will traverse from the given start node to the location pointed to in the XPath expression.
     * 
@@ -52,7 +50,7 @@ public class XPath {
          throw new JinqException(e);
       }
    }
-
+   
    /**
     * Given a starting node, will match the xpath expression against multiple nodes
     * 

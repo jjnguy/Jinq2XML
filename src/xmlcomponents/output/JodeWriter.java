@@ -5,13 +5,13 @@ import xmlcomponents.Jattr;
 import xmlcomponents.Jode;
 
 public class JodeWriter {
-
+   
    private Jode j;
-
+   
    public JodeWriter(Jode j) {
       this.j = j;
    }
-
+   
    @Override
    public String toString() {
       final StringBuilder bldr = new StringBuilder();
