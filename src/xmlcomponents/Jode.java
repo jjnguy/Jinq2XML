@@ -8,7 +8,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import xmlcomponents.autoparse.AutoParser;
-import xmlcomponents.complex.ExtendedNode;
 import xmlcomponents.manipulation.xpath.XPath;
 import xmlcomponents.output.JodeWriter;
 
@@ -19,7 +18,7 @@ import xmlcomponents.output.JodeWriter;
  * 
  */
 public class Jode implements Comparable<Jode> {
-   private ExtendedNode node;
+   private Node node;
    
    /**
     * Creates a new Jode from the given backing node
@@ -28,11 +27,7 @@ public class Jode implements Comparable<Jode> {
     *           the Node to use as a backing for this Jode
     */
    public Jode(Node n) {
-      this(new ExtendedNode(n));
-   }
-   
-   Jode(ExtendedNode node) {
-      this.node = node;
+      this.node = n;
       this.v = node.getTextContent();
       this.n = node.getNodeName();
    }
@@ -122,7 +117,7 @@ public class Jode implements Comparable<Jode> {
     * @return a JodeList of this node's direct children
     */
    public JodeList children() {
-      return new JodeList(node.children());
+      return new JodeList(node.getChildNodes());
    }
    
    /**
@@ -133,7 +128,7 @@ public class Jode implements Comparable<Jode> {
     * @return every child of this node that matches the given name
     */
    public JodeList children(String nodeName) {
-      return new JodeList(node.children(nodeName));
+      return this.children().filter(nodeName);
    }
    
    /**
@@ -144,7 +139,7 @@ public class Jode implements Comparable<Jode> {
     * @return every child of this node that matches the given filter
     */
    public JodeList children(JodeFilter filter) {
-      return new JodeList(node.children(filter));
+      return this.children().filter(filter);
    }
    
    /**
@@ -167,6 +162,15 @@ public class Jode implements Comparable<Jode> {
     */
    public boolean hasMultipleChildren(String childName) {
       return children(childName).size() > 1;
+   }
+   
+   /**
+    * Determines whether or not this node is a whitespace node or not.
+    * 
+    * @return true if this Node is simply whitespace, or false otherwise.
+    */
+   public boolean isWhiteSpace() {
+      return node.getNodeType() == Node.TEXT_NODE && node.getTextContent().trim().length() == 0;
    }
    
    /**
@@ -210,7 +214,7 @@ public class Jode implements Comparable<Jode> {
       // Check to make sure we actually only have 1 child
       if (children.size() != 1)
          throw new JinqException("Call to single() did not return a single result");
-      return new Jode(children.extend().item(0));
+      return this.children().first();
    }
    
    /**
@@ -296,12 +300,12 @@ public class Jode implements Comparable<Jode> {
     * 
     * @return the internal ExtendedNode
     */
-   public ExtendedNode extend() {
+   public Node extend() {
       return node;
    }
    
    @Override
-   public int compareTo(Jode arg0) {
-      return this.extend().compareTo(arg0.extend());
+   public int compareTo(Jode other) {
+      return this.n.compareTo(other.n);
    }
 }

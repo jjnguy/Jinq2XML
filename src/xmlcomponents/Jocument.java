@@ -1,13 +1,16 @@
 package xmlcomponents;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilderFactory;
 
-import xmlcomponents.complex.ExtendedDocument;
+import org.w3c.dom.Document;
 
 /**
  * Represents an XML document. Also provides static methods for creating Jocuments.
@@ -17,7 +20,7 @@ import xmlcomponents.complex.ExtendedDocument;
  */
 public class Jocument extends Jode {
    
-   private ExtendedDocument d;
+   private Document d;
    
    /**
     * Creates a new Jocument from a backing {@link Document}
@@ -26,15 +29,11 @@ public class Jocument extends Jode {
     *           the Document to represent
     */
    public Jocument(Document d) {
-      this(new ExtendedDocument(d));
-   }
-   
-   Jocument(ExtendedDocument d) {
       super(d);
       this.d = d;
    }
    
-   public ExtendedDocument extend() {
+   public Document extend() {
       return d;
    }
    
@@ -46,7 +45,11 @@ public class Jocument extends Jode {
     * @return a Jocument represent the given xml file
     */
    public static Jocument load(String fileLocation) {
-      return new Jocument(ExtendedDocument.load(fileLocation));
+      try {
+         return load(new FileInputStream(new File(fileLocation)));
+      } catch (FileNotFoundException e) {
+         throw new JinqException(e);
+      }
    }
    
    /**
@@ -99,7 +102,11 @@ public class Jocument extends Jode {
     * @return a Jocument represent the given xml file
     */
    public static Jocument load(InputStream in) {
-      return new Jocument(ExtendedDocument.load(in));
+      try {
+         return new Jocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in));
+      } catch (Exception e) {
+         throw new JinqException(e);
+      }
    }
    
    /**
@@ -110,7 +117,7 @@ public class Jocument extends Jode {
     * @return a Jocument represent the given xml file
     */
    public static Jode load(InputStream in, String rootNode) {
-      return new Jocument(ExtendedDocument.load(in)).single(rootNode);
+      return load(in).single(rootNode);
    }
    
    /**

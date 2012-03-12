@@ -2,8 +2,6 @@ package xmlcomponents;
 
 import org.w3c.dom.Attr;
 
-import xmlcomponents.complex.ExtendedAttr;
-
 /**
  * Represents an attribute in XML
  * 
@@ -11,7 +9,7 @@ import xmlcomponents.complex.ExtendedAttr;
  * 
  */
 public class Jattr {
-   private ExtendedAttr a;
+   private Attr a;
    
    /**
     * Convenience field for holding the attribute's name
@@ -29,10 +27,6 @@ public class Jattr {
     *           the Attr to represent
     */
    public Jattr(Attr a) {
-      this(new ExtendedAttr(a));
-   }
-   
-   Jattr(ExtendedAttr a) {
       this.a = a;
       this.v = a.getNodeValue();
       this.n = a.getNodeName();
@@ -74,7 +68,7 @@ public class Jattr {
       return new Jode(a.getOwnerElement());
    }
    
-   public ExtendedAttr extend() {
+   public Attr extend() {
       return a;
    }
    

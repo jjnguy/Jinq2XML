@@ -1,13 +1,16 @@
 package xmlcomponents;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import xmlcomponents.complex.ExtendedNode;
-import xmlcomponents.complex.ExtendedNodeList;
 import xmlcomponents.manipulation.Xformer;
 
 /**
@@ -16,9 +19,9 @@ import xmlcomponents.manipulation.Xformer;
  * @author Justin Nelson
  * 
  */
-public class JodeList implements Iterable<Jode> {
+public class JodeList implements Iterable<Jode>, NodeList {
    
-   private ExtendedNodeList l;
+   private InnerNodeList l;
    
    /**
     * Creates a {@link JodeList} out of a backing {@link NodeList}
@@ -27,11 +30,11 @@ public class JodeList implements Iterable<Jode> {
     *           the node list to represent
     */
    public JodeList(NodeList l) {
-      this(new ExtendedNodeList(l));
+      this.l = new InnerNodeList(l);
    }
    
-   JodeList(ExtendedNodeList l) {
-      this.l = l;
+   JodeList(List<Node> l) {
+      this.l = new InnerNodeList(l);
    }
    
    /**
@@ -49,10 +52,10 @@ public class JodeList implements Iterable<Jode> {
     * @return a JodeList containing only distinct elements.
     */
    public JodeList distinct(JodEqualityComparer comparer) {
-      List<ExtendedNode> results = new ArrayList<ExtendedNode>();
+      List<Node> results = new ArrayList<Node>();
       for (Jode j : this) {
          boolean contains = false;
-         for (ExtendedNode alreadyIn : results) {
+         for (Node alreadyIn : results) {
             if (comparer.equal(j, new Jode(alreadyIn))) {
                contains = true;
                break;
@@ -62,7 +65,7 @@ public class JodeList implements Iterable<Jode> {
             results.add(j.extend());
          }
       }
-      return new JodeList(new ExtendedNodeList(results));
+      return new JodeList(results);
    }
    
    /**
@@ -161,7 +164,7 @@ public class JodeList implements Iterable<Jode> {
    @Override
    public Iterator<Jode> iterator() {
       return new Iterator<Jode>() {
-         private final Iterator<ExtendedNode> backingList = JodeList.this.l.iterator();
+         private final Iterator<Node> backingList = JodeList.this.l.iterator();
          
          @Override
          public boolean hasNext() {
@@ -237,7 +240,7 @@ public class JodeList implements Iterable<Jode> {
     * @return a list of discovered nodes
     */
    public JodeList search(JodeFilter filter) {
-      List<ExtendedNode> ret = new ArrayList<ExtendedNode>();
+      List<Node> ret = new ArrayList<Node>();
       for (Jode j : this) {
          if (filter.accept(j))
             ret.add(j.extend());
@@ -247,7 +250,7 @@ public class JodeList implements Iterable<Jode> {
             }
          }
       }
-      return new JodeList(new ExtendedNodeList(ret));
+      return new JodeList(ret);
    }
    
    /**
@@ -323,8 +326,116 @@ public class JodeList implements Iterable<Jode> {
          }
       });
    }
+
+   @Override
+   public int getLength() {
+      return size();
+   }
+
+   @Override
+   public Node item(int index) {
+      return this.get(index).extend();
+   }
+}
+
+class InnerNodeList implements NodeList, Iterable<Node> {
    
-   public ExtendedNodeList extend() {
-      return l;
+   protected List<Node> jodes;
+   
+   public InnerNodeList(NodeList list) {
+      this(list, false);
+   }
+   
+   public InnerNodeList(NodeList list, boolean retainWhitespace) {
+      jodes = new ArrayList<Node>(list.getLength());
+      for (int i = 0; i < list.getLength(); i++) {
+         Jode toAdd = new Jode(list.item(i));
+         if (!toAdd.isWhiteSpace() || retainWhitespace) {
+            jodes.add(toAdd.extend());
+         }
+      }
+   }
+   
+   public InnerNodeList(List<Node> jodes) {
+      this.jodes = jodes;
+   }
+   
+   public InnerNodeList distinct() {
+      Set<String> names = new HashSet<String>();
+      for (Node n : this) {
+         names.add(n.getNodeName());
+      }
+      List<Node> result = new ArrayList<Node>(names.size());
+      for (String name : names) {
+         result.add(this.filter(name).first());
+      }
+      return new InnerNodeList(result);
+   }
+   
+   public Node first() {
+      if (getLength() == 0)
+         throw new JinqException("There is no first node");
+      return item(0);
+   }
+   
+   public Node single(String nodeName) {
+      InnerNodeList lst = this.filter(nodeName);
+      if (lst.getLength() != 1) {
+         throw new JinqException("The call to 'single' " + nodeName + " did not return 1 result.  It returned "
+               + lst.getLength() + " items.");
+      }
+      return lst.item(0);
+   }
+   
+   public Node single(JodeFilter filter) {
+      InnerNodeList lst = this.filter(filter);
+      if (lst.getLength() != 1)
+         throw new JinqException("The call to 'single' did not return 1 result.");
+      return lst.item(0);
+   }
+   
+   public InnerNodeList filter(final String nodeName) {
+      return this.filter(new JodeFilter() {
+         @Override
+         public boolean accept(Jode j) {
+            return j.extend().getNodeName().equals(nodeName);
+         }
+      });
+   }
+   
+   public InnerNodeList filter(JodeFilter filter) {
+      List<Node> result = new ArrayList<Node>();
+      for (Node j : this) {
+         if (filter.accept(new Jode(j))) {
+            result.add(j);
+         }
+      }
+      return new InnerNodeList(result);
+   }
+   
+   public void sort() {
+      Collections.sort(jodes, new Comparator<Node>() {
+         @Override
+         public int compare(Node o1, Node o2) {
+            return o1.getNodeName().compareTo(o2.getNodeName());
+         }
+      });
+   }
+   
+   @Override
+   public int getLength() {
+      return jodes.size();
+   }
+   
+   @Override
+   public Node item(int arg0) {
+      if (arg0 >= getLength() || arg0 < 0)
+         return null;
+      return jodes.get(arg0);
+   }
+   
+   @Override
+   public Iterator<Node> iterator() {
+      return jodes.iterator();
    }
 }
