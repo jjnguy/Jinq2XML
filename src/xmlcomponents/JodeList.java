@@ -45,7 +45,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return a JodeList containing only distinct elements. Will select the first node with a given name in the list.
     */
    public JodeList distinct() {
-      return distinct(new JodEqualityComparer() {
+      return distinct(new JodeEqualityComparer() {
          @Override
          public boolean equal(Jode _1, Jode _2) {
             return _1.n.equals(_2.n);
@@ -58,7 +58,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * 
     * @return a JodeList containing only distinct elements.
     */
-   public JodeList distinct(JodEqualityComparer comparer) {
+   public JodeList distinct(JodeEqualityComparer comparer) {
       List<Node> results = new ArrayList<Node>();
       for (Jode j : this) {
          boolean contains = false;
