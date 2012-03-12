@@ -57,10 +57,10 @@ public class Jode implements Comparable<Jode> {
     * @return a list of the defined attributes
     */
    public List<Jattr> attributes() {
-      List<Jattr> jattrs = new ArrayList<Jattr>();
       NamedNodeMap attributes = node.getAttributes();
       if (attributes == null)
-         return jattrs;
+         return new ArrayList<Jattr>();
+      List<Jattr> jattrs = new ArrayList<Jattr>();
       for (int i = 0; i < attributes.getLength(); i++) {
          jattrs.add(new Jattr((Attr) attributes.item(i)));
       }
@@ -202,6 +202,43 @@ public class Jode implements Comparable<Jode> {
     */
    public Jode first(JodeFilter filter) {
       return children().first(filter);
+   }
+   
+   /**
+    * Recursively finds all nodes with the given name
+    * 
+    * @param nodeName
+    *           the name of the node to search for
+    * @return a list of discovered nodes
+    */
+   public JodeList search(final String nodeName) {
+      return search(new JodeFilter() {
+         @Override
+         public boolean accept(Jode j) {
+            return j.n.equals(nodeName);
+         }
+      });
+   }
+   
+   /**
+    * Recursively finds all nodes that match the given filter
+    * 
+    * @param filter
+    *           the filter to search for
+    * @return a list of discovered nodes
+    */
+   public JodeList search(JodeFilter filter) {
+      List<Node> ret = new ArrayList<Node>();
+      if (filter.accept(this)) {
+         ret.add(this.extend());
+      }
+      for (Jode j : this.children()) {
+         JodeList subResult = j.search(filter);
+         for (Jode subJ : subResult) {
+            ret.add(subJ.extend());
+         }
+      }
+      return new JodeList(ret);
    }
    
    /**

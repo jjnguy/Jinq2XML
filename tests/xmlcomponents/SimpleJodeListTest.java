@@ -7,11 +7,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Node;
 
 import xmlcomponents.manipulation.Xformer;
 
@@ -21,7 +23,8 @@ public class SimpleJodeListTest {
    
    @Before
    public void setUp() throws Exception {
-      list = Jocument.load("tests/test_xml_files/xml_lists.xml", "root").single().children();
+      Jode doc = Jocument.load("tests/test_xml_files/xml_lists.xml", "root");
+      list = doc.single().children();
    }
    
    @Test
@@ -111,6 +114,19 @@ public class SimpleJodeListTest {
       assertThat(third.attribute("idx").value(), equalTo("3"));
    }
    
+   @Test
+   public void testItem() {
+      JodeList filtered = list.distinct();
+      Node zero_1 = filtered.item(0);
+      Jode zero_2 = filtered.get(0);
+      assertTrue(zero_1.getNodeName().equals(zero_2.n));
+   }
+   
+   public void testDistinct() {
+      JodeList distinct  = list.distinct();
+      assertThat(distinct.size(), equalTo(3));
+   }
+   
    @Test(expected = UnsupportedOperationException.class)
    public void testIterator_throwsExceptionOnRemove() {
       Iterator<Jode> itr = list.iterator();
@@ -155,9 +171,52 @@ public class SimpleJodeListTest {
       assertThat(result.attribute("first").value(), equalTo("true"));
    }
    
+   @Test(expected = JinqException.class)
+   public void testSingleNameThrowsException() {
+      list.single("item");
+   }
+   
+   @Test(expected = JinqException.class)
+   public void testSingleFilterThrowsException() {
+      list.single(new JodeFilter() {
+         @Override
+         public boolean accept(Jode j) {
+            return true;
+         }
+      });
+   }
+   
    @Test
    public void testSize() {
       assertThat(list.size(), is(15));
+   }
+   
+   @Test
+   public void testSortWithCustom() {
+      list.sort(new Comparator<Jode>() {
+         @Override
+         public int compare(Jode o1, Jode o2) {
+            if (!o1.n.equals(o2.n)) {
+               return o1.n.compareTo(o2.n);
+            }
+            return o1.attributes().size() - o2.attributes().size();
+         }
+      });
+      Jode prev = null;
+      for (Jode current : list) {
+         if (prev != null)
+            assertTrue(prev.compareTo(current) >= 0);
+      }
+   }
+   
+   @Test
+   public void testSort() {
+      list.sort();
+      Jode prev = null;
+      for (Jode current : list) {
+         if (prev != null)
+            assertTrue(prev.compareTo(current) >= 0);
+      }
    }
    
    @Test

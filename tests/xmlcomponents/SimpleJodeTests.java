@@ -118,6 +118,13 @@ public class SimpleJodeTests {
    }
    
    @Test
+   public void testCompareTo() {
+      Jode j1 = Jocument.parse("<aardvark>Oink</aardvark>");
+      Jode j2 = Jocument.parse("<zipper>Haha</zipper>");
+      assertThat(j1.compareTo(j2), equalTo(j1.n.compareTo(j2.n)));
+   }
+   
+   @Test
    public void testHasMultipleChildren() {
       assertFalse(j.hasMultipleChildren("childList"));
       assertTrue(j.hasMultipleChildren("anotherNode"));
@@ -190,5 +197,19 @@ public class SimpleJodeTests {
       String value = j.value();
       String expectedValue = "text0text1text2text3grandChildText";
       assertThat(value.replaceAll("\\s*", ""), equalTo(expectedValue));
+   }
+   
+   @Test
+   public void testXPathTraverse() {
+      String path = "//root/singleChild/grandChild";
+      Jode result = j.xPathTraverse(path);
+      assertThat(result.n, equalTo("grandChild"));
+   }
+   
+   @Test
+   public void testXPathFind() {
+      String path = "//root/childList/child";
+      JodeList result = j.xPathFind(path);
+      assertThat(result.size(), equalTo(4));
    }
 }

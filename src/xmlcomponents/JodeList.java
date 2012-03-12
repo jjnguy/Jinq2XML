@@ -3,10 +3,8 @@ package xmlcomponents;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,7 +19,7 @@ import xmlcomponents.manipulation.Xformer;
  */
 public class JodeList implements Iterable<Jode>, NodeList {
    
-   private InnerNodeList l;
+   private List<Node> nodes;
    
    /**
     * Creates a {@link JodeList} out of a backing {@link NodeList}
@@ -30,11 +28,15 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the node list to represent
     */
    public JodeList(NodeList l) {
-      this.l = new InnerNodeList(l);
+      this.nodes = new ArrayList<Node>(l.getLength());
+      for (int i = 0; i < l.getLength(); i++) {
+         if (!new Jode(l.item(i)).isWhiteSpace())
+            this.nodes.add(l.item(i));
+      }
    }
    
    JodeList(List<Node> l) {
-      this.l = new InnerNodeList(l);
+      this.nodes = l;
    }
    
    /**
@@ -43,7 +45,12 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return a JodeList containing only distinct elements. Will select the first node with a given name in the list.
     */
    public JodeList distinct() {
-      return new JodeList(l.distinct());
+      return distinct(new JodEqualityComparer() {
+         @Override
+         public boolean equal(Jode _1, Jode _2) {
+            return _1.n.equals(_2.n);
+         }
+      });
    }
    
    /**
@@ -99,8 +106,13 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the filter criteria to use
     * @return a JodeList containing only nodes that matched the filter criteria
     */
-   public JodeList filter(JodeFilter filter) {
-      return new JodeList(l.filter(filter));
+   public JodeList filter(final String nodeName) {
+      return this.filter(new JodeFilter() {
+         @Override
+         public boolean accept(Jode j) {
+            return j.extend().getNodeName().equals(nodeName);
+         }
+      });
    }
    
    /**
@@ -110,8 +122,15 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the name of the nodes we would like to filter by
     * @return JodeList containing only nodes that match the given node name
     */
-   public JodeList filter(String nodeName) {
-      return new JodeList(l.filter(nodeName));
+   
+   public JodeList filter(JodeFilter filter) {
+      List<Node> result = new ArrayList<Node>();
+      for (Jode j : this) {
+         if (filter.accept(j)) {
+            result.add(j.extend());
+         }
+      }
+      return new JodeList(result);
    }
    
    /**
@@ -158,13 +177,13 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return the node at index i
     */
    public Jode get(int i) {
-      return new Jode(l.item(i));
+      return new Jode(nodes.get(i));
    }
    
    @Override
    public Iterator<Jode> iterator() {
       return new Iterator<Jode>() {
-         private final Iterator<Node> backingList = JodeList.this.l.iterator();
+         private final Iterator<Node> backingList = JodeList.this.nodes.iterator();
          
          @Override
          public boolean hasNext() {
@@ -217,43 +236,6 @@ public class JodeList implements Iterable<Jode>, NodeList {
    }
    
    /**
-    * Recursively finds all nodes with the given name
-    * 
-    * @param nodeName
-    *           the name of the node to search for
-    * @return a list of discovered nodes
-    */
-   public JodeList search(final String nodeName) {
-      return search(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.n.equals(nodeName);
-         }
-      });
-   }
-   
-   /**
-    * Recursively finds all nodes that match the given filter
-    * 
-    * @param filter
-    *           the filter to search for
-    * @return a list of discovered nodes
-    */
-   public JodeList search(JodeFilter filter) {
-      List<Node> ret = new ArrayList<Node>();
-      for (Jode j : this) {
-         if (filter.accept(j))
-            ret.add(j.extend());
-         else {
-            for (Jode j2 : j.children().search(filter)) {
-               ret.add(j2.extend());
-            }
-         }
-      }
-      return new JodeList(ret);
-   }
-   
-   /**
     * Will return the only element of this list with the given node name. If there is more than one matching element,
     * this will throw an {@link JinqException}.
     * 
@@ -262,7 +244,12 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return the single node matching the given name
     */
    public Jode single(String nodeName) {
-      return new Jode(l.single(nodeName));
+      JodeList resultList = this.filter(nodeName);
+      if (resultList.getLength() != 1) {
+         throw new JinqException("The call to 'single' " + nodeName + " did not return 1 result.  It returned "
+               + resultList.getLength() + " items.");
+      }
+      return resultList.get(0);
    }
    
    /**
@@ -274,7 +261,10 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return the single node matching this filter
     */
    public Jode single(JodeFilter filter) {
-      return new Jode(l.single(filter));
+      JodeList lst = this.filter(filter);
+      if (lst.getLength() != 1)
+         throw new JinqException("The call to 'single' did not return 1 result.");
+      return lst.get(0);
    }
    
    /**
@@ -283,14 +273,32 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return the number of top-level Jode elements in this list
     */
    public int size() {
-      return l.getLength();
+      return nodes.size();
    }
    
    /**
     * Sorts this list by Node name
     */
    public void sort() {
-      l.sort();
+      sort(new Comparator<Jode>() {
+         @Override
+         public int compare(Jode o1, Jode o2) {
+            return o1.name().compareTo(o2.name());
+         }
+      });
+   }
+   
+   /**
+    * Sorts this list using the given Comparator
+    */
+   public void sort(final Comparator<Jode> comparator) {
+      Comparator<Node> alteredComparator = new Comparator<Node>() {
+         @Override
+         public int compare(Node o1, Node o2) {
+            return comparator.compare(new Jode(o1), new Jode(o2));
+         }
+      };
+      Collections.sort(nodes, alteredComparator);
    }
    
    /**
@@ -309,133 +317,13 @@ public class JodeList implements Iterable<Jode>, NodeList {
       return ret;
    }
    
-   /**
-    * Will attempt to parse this list of nodes into the passed in type. See {@link Jode}.toObject for more info.
-    * 
-    * @param <T>
-    *           the type to transform into
-    * @param clazz
-    *           the type to transform into
-    * @return a list of the passed in type
-    */
-   public <T> List<T> xform(final Class<T> clazz) {
-      return xform(new Xformer<T>() {
-         @Override
-         public T xform(Jode j) {
-            return j.toObject(clazz);
-         }
-      });
-   }
-
    @Override
    public int getLength() {
       return size();
    }
-
+   
    @Override
    public Node item(int index) {
-      return this.get(index).extend();
-   }
-}
-
-class InnerNodeList implements NodeList, Iterable<Node> {
-   
-   protected List<Node> jodes;
-   
-   public InnerNodeList(NodeList list) {
-      this(list, false);
-   }
-   
-   public InnerNodeList(NodeList list, boolean retainWhitespace) {
-      jodes = new ArrayList<Node>(list.getLength());
-      for (int i = 0; i < list.getLength(); i++) {
-         Jode toAdd = new Jode(list.item(i));
-         if (!toAdd.isWhiteSpace() || retainWhitespace) {
-            jodes.add(toAdd.extend());
-         }
-      }
-   }
-   
-   public InnerNodeList(List<Node> jodes) {
-      this.jodes = jodes;
-   }
-   
-   public InnerNodeList distinct() {
-      Set<String> names = new HashSet<String>();
-      for (Node n : this) {
-         names.add(n.getNodeName());
-      }
-      List<Node> result = new ArrayList<Node>(names.size());
-      for (String name : names) {
-         result.add(this.filter(name).first());
-      }
-      return new InnerNodeList(result);
-   }
-   
-   public Node first() {
-      if (getLength() == 0)
-         throw new JinqException("There is no first node");
-      return item(0);
-   }
-   
-   public Node single(String nodeName) {
-      InnerNodeList lst = this.filter(nodeName);
-      if (lst.getLength() != 1) {
-         throw new JinqException("The call to 'single' " + nodeName + " did not return 1 result.  It returned "
-               + lst.getLength() + " items.");
-      }
-      return lst.item(0);
-   }
-   
-   public Node single(JodeFilter filter) {
-      InnerNodeList lst = this.filter(filter);
-      if (lst.getLength() != 1)
-         throw new JinqException("The call to 'single' did not return 1 result.");
-      return lst.item(0);
-   }
-   
-   public InnerNodeList filter(final String nodeName) {
-      return this.filter(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.extend().getNodeName().equals(nodeName);
-         }
-      });
-   }
-   
-   public InnerNodeList filter(JodeFilter filter) {
-      List<Node> result = new ArrayList<Node>();
-      for (Node j : this) {
-         if (filter.accept(new Jode(j))) {
-            result.add(j);
-         }
-      }
-      return new InnerNodeList(result);
-   }
-   
-   public void sort() {
-      Collections.sort(jodes, new Comparator<Node>() {
-         @Override
-         public int compare(Node o1, Node o2) {
-            return o1.getNodeName().compareTo(o2.getNodeName());
-         }
-      });
-   }
-   
-   @Override
-   public int getLength() {
-      return jodes.size();
-   }
-   
-   @Override
-   public Node item(int arg0) {
-      if (arg0 >= getLength() || arg0 < 0)
-         return null;
-      return jodes.get(arg0);
-   }
-   
-   @Override
-   public Iterator<Node> iterator() {
-      return jodes.iterator();
+      return this.nodes.get(index);
    }
 }

@@ -1,0 +1,18 @@
+<root>
+  <searchTarget>
+    <notTheTarget>
+      <searchTarget>
+        <evenDeeper>
+          <searchTarget />
+          <searchTarget />
+        </evenDeeper>
+      </searchTarget>
+      <searchTarget>
+        <evenDeeper>
+          <searchTarget />
+          <searchTarget />
+        </evenDeeper>
+      </searchTarget>
+    </notTheTarget>
+  </searchTarget>
+</root>

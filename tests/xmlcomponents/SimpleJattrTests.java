@@ -45,4 +45,14 @@ public class SimpleJattrTests {
    public void testParent() {
       assertThat(name.parent().n, equalTo(j.n));
    }
+   
+   @Test
+   public void testToString() {
+      assertThat(name.toString(), equalTo("name = root"));
+   }
+   
+   @Test
+   public void testExtend() {
+      assertThat(name.extend().getName(), equalTo("name"));
+   }
 }
