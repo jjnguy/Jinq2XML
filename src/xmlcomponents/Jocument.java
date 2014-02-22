@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 /**
  * Represents an XML document. Also provides static methods for creating Jocuments.
  * 
- * @author Justin Nelson
+ * @author jjnguy
  * 
  */
 public class Jocument extends Jode {
@@ -33,6 +33,7 @@ public class Jocument extends Jode {
       this.d = d;
    }
    
+   @Override
    public Document extend() {
       return d;
    }

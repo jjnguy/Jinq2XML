@@ -14,7 +14,7 @@ import xmlcomponents.output.JodeWriter;
 /**
  * Class representing a Node from an XML document
  * 
- * @author Justin Nelson
+ * @author jjnguy
  * 
  */
 public class Jode implements Comparable<Jode> {
@@ -143,11 +143,11 @@ public class Jode implements Comparable<Jode> {
    }
    
    /**
-    * Returns whether or not this node has a child with the given name
+    * Returns whether or not this node has one child with the given name
     * 
     * @param childName
     *           the name of the child to look for
-    * @return true if the child was found, false otherwise.
+    * @return true if only one child was found, false otherwise.
     */
    public boolean hasSingleChild(String childName) {
       return children(childName).size() == 1;
@@ -255,7 +255,7 @@ public class Jode implements Comparable<Jode> {
    }
    
    /**
-    * Equivalent to calling children().single(nodeName). In fact, that's exactly what this method does. This returns the
+    * Equivalent to calling children().single(String). In fact, that's exactly what this method does. This returns the
     * only item that matches the given node name. Will throw an exception if more than one or no item matches.
     * 
     * @param nodeName
@@ -267,7 +267,7 @@ public class Jode implements Comparable<Jode> {
    }
    
    /**
-    * Equivalent to calling children().single(filter). In fact, that's exactly what this method does. This returns the
+    * Equivalent to calling children().single(JodeFilter). In fact, that's exactly what this method does. This returns the
     * only item that matches the given filter. Will throw an exception if more than one or no item matches.
     * 
     * @param filter
@@ -314,7 +314,7 @@ public class Jode implements Comparable<Jode> {
     * Uses an Xpath string to collect a set of nodes.
     * 
     * @param path
-    *           the xpath to traverse
+    *           the xpath to search for
     * @return a list of matching nodes
     */
    public JodeList xPathFind(String path) {
@@ -335,7 +335,7 @@ public class Jode implements Comparable<Jode> {
    /**
     * Provided so people can use the full functionality of a Node if they want.
     * 
-    * @return the internal ExtendedNode
+    * @return the internal Node
     */
    public Node extend() {
       return node;

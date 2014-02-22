@@ -3,6 +3,7 @@ package xmlcomponents;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -289,7 +290,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
    }
    
    /**
-    * Sorts this list using the given Comparator
+    * Sorts this list in place using the given Comparator
     */
    public void sort(final Comparator<Jode> comparator) {
       Comparator<Node> alteredComparator = new Comparator<Node>() {
