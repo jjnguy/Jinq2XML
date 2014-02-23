@@ -6,6 +6,7 @@ package xmlcomponents;
  * @author jjnguy
  * 
  */
+@FunctionalInterface
 public interface Action {
    /**
     * Applies this method to the supplied {@link Jode}.

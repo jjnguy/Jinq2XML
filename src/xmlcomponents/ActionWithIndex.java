@@ -6,6 +6,7 @@ package xmlcomponents;
  * @author jjnguy
  * 
  */
+@FunctionalInterface
 public interface ActionWithIndex {
    /**
     * Applies this method to the supplied Jode.

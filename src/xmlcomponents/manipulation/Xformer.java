@@ -10,6 +10,7 @@ import xmlcomponents.Jode;
  * @param <T>
  *           the type that the given Jode will be transformed into
  */
+@FunctionalInterface
 public interface Xformer<T> {
    /**
     * Given a Jode, will create an object of type T

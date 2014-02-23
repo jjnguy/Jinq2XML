@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -46,12 +47,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return a JodeList containing only distinct elements. Will select the first node with a given name in the list.
     */
    public JodeList distinct() {
-      return distinct(new JodeEqualityComparer() {
-         @Override
-         public boolean equal(Jode _1, Jode _2) {
-            return _1.n.equals(_2.n);
-         }
-      });
+      return distinct((j1, j2) -> j1.n.equals(j2.n));
    }
    
    /**
@@ -108,12 +104,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return a JodeList containing only nodes that matched the filter criteria
     */
    public JodeList filter(final String nodeName) {
-      return this.filter(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.extend().getNodeName().equals(nodeName);
-         }
-      });
+      return this.filter(j -> j.extend().getNodeName().equals(nodeName));
    }
    
    /**
@@ -123,15 +114,9 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the name of the nodes we would like to filter by
     * @return JodeList containing only nodes that match the given node name
     */
-   
    public JodeList filter(JodeFilter filter) {
-      List<Node> result = new ArrayList<Node>();
-      for (Jode j : this) {
-         if (filter.accept(j)) {
-            result.add(j.extend());
-         }
-      }
-      return new JodeList(result);
+      return new JodeList(this.nodes.stream()
+            .filter(n -> filter.accept(n)).collect(Collectors.toList()));
    }
    
    /**

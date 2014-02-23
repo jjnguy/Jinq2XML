@@ -10,6 +10,7 @@ package xmlcomponents;
  * @param <T_To>
  *           the type to convert to
  */
+@FunctionalInterface
 public interface Converter<T_From, T_To> {
    /**
     * Converts the given value into the expected return type.
