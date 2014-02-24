@@ -7,8 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
-import xmlcomponents.Converter;
 import xmlcomponents.Jattr;
 import xmlcomponents.Jode;
 import xmlcomponents.autoparse.annotation.XmlProperty;
@@ -57,7 +57,7 @@ public class AutoParser {
          return j.v;
       } else if (j.hasAttribute(fieldName)) {
          Jattr attr = j.attribute(fieldName);
-         Converter<String, Object> converter = determineConverter(type);
+         Function<String, Object> converter = determineConverter(type);
          return attr.value(converter);
       } else if (j.hasSingleChild(fieldName) && !type.isInstance((Collection<?>) null)) {
          Object complex = type.newInstance();
@@ -100,7 +100,7 @@ public class AutoParser {
       return s == null || s.equals("");
    }
    
-   private static Converter<String, Object> determineConverter(Class<?> type) {
+   private static Function<String, Object> determineConverter(Class<?> type) {
       if (type.equals(String.class)) {
          return value -> value;
       } else if (type.equals(Integer.class) || type.equals(int.class)) {

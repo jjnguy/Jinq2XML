@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import xmlcomponents.manipulation.Xformer;
 
 /**
  * Represents a List of {@link Jode} . Will usually be created by calling <code>children()</code> on a Jode.
@@ -78,9 +79,9 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @param a
     *           the action to perform
     */
-   public void each(Action a) {
+   public void each(Consumer<Jode> a) {
       for (Jode j : this) {
-         a.act(j);
+         a.accept(j);
       }
    }
 
@@ -88,11 +89,11 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * Performs the given action on each node
     * 
     * @param a
-    *           the action to perform
+    *           the action to perform. The second param is the current index
     */
-   public void each(ActionWithIndex a) {
+   public void each(ObjIntConsumer<Jode> a) {
       for (int i = 0; i < size(); i++) {
-         a.act(get(i), i);
+         a.accept(get(i), i);
       }
    }
 
@@ -203,10 +204,10 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the transformer to use to transform each node
     * @return a String created from joining all of the nodes in this list with the given delimiter
     */
-   public String join(String delim, Xformer<String> xformer) {
+   public String join(String delim, Function<Jode, String> xformer) {
       StringBuilder bldr = new StringBuilder();
       for (Jode j : this) {
-         bldr.append(xformer.xform(j)).append(delim);
+         bldr.append(xformer.apply(j)).append(delim);
       }
       return bldr.substring(0, bldr.length() - delim.length());
    }
@@ -272,11 +273,11 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the method used to transform a Jode into the correct type
     * @return a List<T> of elements that were created from this JodeList
     */
-   public <T> List<T> xform(Xformer<T> xform) {
+   public <T> List<T> xform(Function<Jode, T> xform) {
       List<T> ret = new ArrayList<T>(this.size());
       // For each element in this Jode list, apply the transform
       for (Jode j : this) {
-         ret.add(xform.xform(j));
+         ret.add(xform.apply(j));
       }
       return ret;
    }
