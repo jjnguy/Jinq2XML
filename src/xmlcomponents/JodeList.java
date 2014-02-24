@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
@@ -115,9 +116,9 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the name of the nodes we would like to filter by
     * @return JodeList containing only nodes that match the given node name
     */
-   public JodeList filter(JodeFilter filter) {
+   public JodeList filter(Predicate<Jode> filter) {
       return new JodeList(this.nodes.stream()
-            .filter(n -> filter.accept(n)).collect(Collectors.toList()));
+            .filter(n -> filter.test(new Jode(n))).collect(Collectors.toList()));
    }
 
    /**
@@ -132,9 +133,9 @@ public class JodeList implements Iterable<Jode>, NodeList {
          return get(0);
    }
 
-   public Jode first(JodeFilter filter) {
+   public Jode first(Predicate<Jode> filter) {
       for (Jode j : this) {
-         if (filter.accept(j))
+         if (filter.test(j))
             return j;
       }
       return null;
@@ -234,7 +235,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the filter to apply to this list
     * @return the single node matching this filter
     */
-   public Jode single(JodeFilter filter) {
+   public Jode single(Predicate<Jode> filter) {
       JodeList lst = this.filter(filter);
       if (lst.getLength() != 1)
          throw new JinqException("The call to 'single' did not return 1 result.");
