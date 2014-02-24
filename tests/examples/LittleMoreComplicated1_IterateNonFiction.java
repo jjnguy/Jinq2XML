@@ -1,6 +1,5 @@
 package examples;
 
-import xmlcomponents.Action;
 import xmlcomponents.Jocument;
 import xmlcomponents.Jode;
 import xmlcomponents.JodeList;
@@ -21,11 +20,6 @@ public class LittleMoreComplicated1_IterateNonFiction {
       System.out.println();
       
       // alternate iteration method
-      nonFiction.each(new Action() {
-         @Override
-         public void act(Jode j) {
-            System.out.println("Item - " + j.n);
-         }
-      });
+      nonFiction.each(j -> System.out.println("Item - " + j.n));
    }
 }

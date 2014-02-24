@@ -212,12 +212,7 @@ public class Jode implements Comparable<Jode> {
     * @return a list of discovered nodes
     */
    public JodeList search(final String nodeName) {
-      return search(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.n.equals(nodeName);
-         }
-      });
+      return search(j -> j.n.equals(nodeName));
    }
    
    /**

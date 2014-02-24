@@ -102,77 +102,51 @@ public class AutoParser {
    
    private static Converter<String, Object> determineConverter(Class<?> type) {
       if (type.equals(String.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               return value;
-            }
-         };
+         return value -> value;
       } else if (type.equals(Integer.class) || type.equals(int.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               if (empty(value))
-                  return 0;
-               return Integer.parseInt(value);
-            }
+         return (value) -> {
+            if (empty(value))
+               return 0;
+            return Integer.parseInt(value);
          };
       } else if (type.equals(Long.class) || type.equals(long.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               if (empty(value))
-                  return 0;
-               return Long.parseLong(value);
-            }
+         return (value) -> {
+            if (empty(value))
+               return 0;
+            return Long.parseLong(value);
          };
       } else if (type.equals(Byte.class) || type.equals(byte.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               if (empty(value))
-                  return 0;
-               return Byte.parseByte(value);
-            }
+         return (value) -> {
+            if (empty(value))
+               return 0;
+            return Byte.parseByte(value);
          };
       } else if (type.equals(Double.class) || type.equals(double.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               if (empty(value))
-                  return 0;
-               return Double.parseDouble(value);
-            }
+         return (value) -> {
+            if (empty(value))
+               return 0;
+            return Double.parseDouble(value);
          };
       } else if (type.equals(Float.class) || type.equals(float.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               if (empty(value))
-                  return 0;
-               return Float.parseFloat(value);
-            }
+         return (value) -> {
+            if (empty(value))
+               return 0;
+            return Float.parseFloat(value);
          };
       } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               if (empty(value))
-                  return false;
-               return Boolean.parseBoolean(value);
-            }
+         return (value) -> {
+            if (empty(value))
+               return false;
+            return Boolean.parseBoolean(value);
          };
       }
       // Begin complex types
       else if (type.equals(URL.class)) {
-         return new Converter<String, Object>() {
-            @Override
-            public Object convert(String value) {
-               try {
-                  return new URL(value);
-               } catch (MalformedURLException e) {
-                  throw new IllegalArgumentException("Could not convert the given value into a URL.");
-               }
+         return (value) -> {
+            try {
+               return new URL(value);
+            } catch (MalformedURLException e) {
+               throw new IllegalArgumentException("Could not convert the given value into a URL.");
             }
          };
       }

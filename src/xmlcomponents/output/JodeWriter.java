@@ -1,6 +1,5 @@
 package xmlcomponents.output;
 
-import xmlcomponents.Action;
 import xmlcomponents.Jattr;
 import xmlcomponents.Jode;
 
@@ -20,12 +19,7 @@ public class JodeWriter {
          bldr.append(" ").append(a.name()).append("=\"").append(a.value()).append("\"");
       }
       bldr.append(">");
-      j.children().each(new Action() {
-         @Override
-         public void act(Jode j) {
-            bldr.append(new JodeWriter(j).toString());
-         }
-      });
+      j.children().each(j -> bldr.append(new JodeWriter(j).toString()));
       bldr.append("</").append(j.n).append(">");
       return bldr.toString();
    }
