@@ -2,6 +2,7 @@ package xmlcomponents;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
@@ -138,7 +139,7 @@ public class Jode implements Comparable<Jode> {
     *           the filter to apply to the children of this node
     * @return every child of this node that matches the given filter
     */
-   public JodeList children(JodeFilter filter) {
+   public JodeList children(Predicate<Jode> filter) {
       return this.children().filter(filter);
    }
    
@@ -200,7 +201,7 @@ public class Jode implements Comparable<Jode> {
     *           the filter to test all children against
     * @return the first child node to match the given node name, or null otherwise
     */
-   public Jode first(JodeFilter filter) {
+   public Jode first(Predicate<Jode> filter) {
       return children().first(filter);
    }
    
@@ -212,12 +213,7 @@ public class Jode implements Comparable<Jode> {
     * @return a list of discovered nodes
     */
    public JodeList search(final String nodeName) {
-      return search(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.n.equals(nodeName);
-         }
-      });
+      return search(j -> j.n.equals(nodeName));
    }
    
    /**
@@ -227,9 +223,9 @@ public class Jode implements Comparable<Jode> {
     *           the filter to search for
     * @return a list of discovered nodes
     */
-   public JodeList search(JodeFilter filter) {
+   public JodeList search(Predicate<Jode> filter) {
       List<Node> ret = new ArrayList<Node>();
-      if (filter.accept(this)) {
+      if (filter.test(this)) {
          ret.add(this.extend());
       }
       for (Jode j : this.children()) {
@@ -274,7 +270,7 @@ public class Jode implements Comparable<Jode> {
     *           the filter to apply to the children of this node
     * @return the only child of this node to match the given filter
     */
-   public Jode single(JodeFilter filter) {
+   public Jode single(Predicate<Jode> filter) {
       return children().single(filter);
    }
    

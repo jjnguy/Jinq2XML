@@ -88,23 +88,10 @@ public class SimpleJodeTests {
    
    @Test
    public void testChildrenJodeFilter() {
-      JodeList all_children = j.children(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return true;
-         }
-      });
-      JodeList no_children = j.children(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return false;
-         }
-      });
-      JodeList some_children = j.children(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.n.equals("childList") || j.n.equals("anotherNode");
-         }
+      JodeList all_children = j.children(j -> true);
+      JodeList no_children = j.children(j -> false);
+      JodeList some_children = j.children(j -> {
+         return j.n.equals("childList") || j.n.equals("anotherNode");
       });
       assertThat(all_children.size(), is(6));
       assertThat(no_children.size(), is(0));
@@ -146,11 +133,8 @@ public class SimpleJodeTests {
    
    @Test
    public void testFirstJodeFilter() {
-      Jode acutalTestfirst = j.first(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.n.equals("anotherNode") && !j.attribute("first").value().equals("true");
-         }
+      Jode acutalTestfirst = j.first(j -> {
+         return j.n.equals("anotherNode") && !j.attribute("first").value().equals("true");
       });
       assertThat(acutalTestfirst.attribute("first").value(), equalTo("false_1"));
    }
@@ -175,11 +159,8 @@ public class SimpleJodeTests {
    
    @Test
    public void testSingleJodeFilter() {
-      Jode single = j.single(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.n.equals("anotherNode") && j.attribute("first").value().equals("true");
-         }
+      Jode single = j.single(j -> {
+         return j.n.equals("anotherNode") && j.attribute("first").value().equals("true");
       });
       assertThat(single.n, equalTo("anotherNode"));
    }

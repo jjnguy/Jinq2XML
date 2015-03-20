@@ -1,5 +1,7 @@
 package xmlcomponents;
 
+import java.util.function.Function;
+
 import org.w3c.dom.Attr;
 
 /**
@@ -55,8 +57,8 @@ public class Jattr {
     * 
     * @return the value of this attribute
     */
-   public <T> T value(Converter<String, T> converter) {
-      return converter.convert(a.getNodeValue());
+   public <T> T value(Function<String, T> converter) {
+      return converter.apply(a.getNodeValue());
    }
    
    /**

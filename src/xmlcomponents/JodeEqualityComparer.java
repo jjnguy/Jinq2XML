@@ -5,6 +5,7 @@ package xmlcomponents;
  * 
  * @author jjnguy
  */
+@FunctionalInterface
 public interface JodeEqualityComparer {
    /**
     * Returns whether or not two Jodes are equal

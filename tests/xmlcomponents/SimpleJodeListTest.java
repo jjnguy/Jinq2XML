@@ -7,15 +7,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Node;
-
-import xmlcomponents.manipulation.Xformer;
 
 public class SimpleJodeListTest {
    
@@ -30,24 +27,14 @@ public class SimpleJodeListTest {
    @Test
    public void testEachAction() {
       final List<Jode> visited = new ArrayList<Jode>();
-      list.each(new Action() {
-         @Override
-         public void act(Jode j) {
-            visited.add(j);
-         }
-      });
+      list.each(j -> visited.add(j));
       assertThat(visited.size(), equalTo(list.size()));
    }
    
    @Test
    public void testEachActionWithIndex() {
       final boolean[] visited = new boolean[list.size()];
-      list.each(new ActionWithIndex() {
-         @Override
-         public void act(Jode j, int index) {
-            visited[index] = true;
-         }
-      });
+      list.each((j, index) -> visited[index] = true);
       for (boolean b : visited) {
          assertTrue(b);
       }
@@ -55,11 +42,8 @@ public class SimpleJodeListTest {
    
    @Test
    public void testFilterJodeFilter() {
-      JodeList filtered = list.filter(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return !j.v.trim().equals("");
-         }
+      JodeList filtered = list.filter(j -> {
+         return !j.v.trim().equals("");
       });
       assertThat(filtered.size(), equalTo(3));
    }
@@ -78,12 +62,7 @@ public class SimpleJodeListTest {
    
    @Test
    public void testFirst_noFirst() {
-      Jode first = list.first(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return false;
-         }
-      });
+      Jode first = list.first((j) -> false);
       assertThat(first, nullValue());
       first = list.filter("blah").first();
       assertThat(first, nullValue());
@@ -91,12 +70,7 @@ public class SimpleJodeListTest {
    
    @Test
    public void testFirstJodeFilter() {
-      Jode first = list.first(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return !j.v.trim().equals("");
-         }
-      });
+      Jode first = list.first(j -> !j.v.trim().equals(""));
       assertThat(first.attribute("first").value(), equalTo("withText"));
    }
    
@@ -143,12 +117,7 @@ public class SimpleJodeListTest {
    
    @Test
    public void testJoinStringXformerOfString() {
-      String result = list.join(", ", new Xformer<String>() {
-         @Override
-         public String xform(Jode j) {
-            return j.n;
-         }
-      });
+      String result = list.join(", ", j -> j.n);
       String expected = "item, item, item, item, item, item, item, anotherItem, anotherItem, anotherItem, anotherItem, anotherItem, anotherItem, anotherItem, singleItem";
       assertThat(result, equalTo(expected));
    }
@@ -161,11 +130,8 @@ public class SimpleJodeListTest {
    
    @Test
    public void testSingleJodeFilter() {
-      Jode result = list.single(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return j.hasAttribute("first") && j.attribute("first").value().equals("true");
-         }
+      Jode result = list.single(j -> {
+         return j.hasAttribute("first") && j.attribute("first").value().equals("true");
       });
       assertThat(result.n, equalTo("item"));
       assertThat(result.attribute("first").value(), equalTo("true"));
@@ -178,12 +144,7 @@ public class SimpleJodeListTest {
    
    @Test(expected = JinqException.class)
    public void testSingleFilterThrowsException() {
-      list.single(new JodeFilter() {
-         @Override
-         public boolean accept(Jode j) {
-            return true;
-         }
-      });
+      list.single(j -> true);
    }
    
    @Test
@@ -193,14 +154,11 @@ public class SimpleJodeListTest {
    
    @Test
    public void testSortWithCustom() {
-      list.sort(new Comparator<Jode>() {
-         @Override
-         public int compare(Jode o1, Jode o2) {
-            if (!o1.n.equals(o2.n)) {
-               return o1.n.compareTo(o2.n);
-            }
-            return o1.attributes().size() - o2.attributes().size();
+      list.sort((j1, j2) -> {
+         if (!j1.n.equals(j2.n)) {
+            return j1.n.compareTo(j2.n);
          }
+         return j1.attributes().size() - j2.attributes().size();
       });
       Jode prev = null;
       for (Jode current : list) {
@@ -221,12 +179,7 @@ public class SimpleJodeListTest {
    
    @Test
    public void testXform_xformer() {
-      List<String> result = list.xform(new Xformer<String>() {
-         @Override
-         public String xform(Jode j) {
-            return j.n;
-         }
-      });
+      List<String> result = list.xform(j -> j.n);
       for (int i = 0; i < result.size(); i++) {
          assertThat(result.get(i), equalTo(list.get(i).n));
       }

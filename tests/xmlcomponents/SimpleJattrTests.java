@@ -33,12 +33,7 @@ public class SimpleJattrTests {
    
    @Test
    public void testValueConverterOfStringT() {
-      assertThat(count.value(new Converter<String, Integer>() {
-         @Override
-         public Integer convert(String value) {
-            return Integer.parseInt(value);
-         }
-      }), is(1));
+      assertThat(count.value(value -> Integer.parseInt(value)), is(1));
    }
    
    @Test
