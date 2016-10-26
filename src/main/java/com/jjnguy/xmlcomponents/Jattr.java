@@ -53,7 +53,7 @@ public class Jattr {
    }
    
    /**
-    * Gives you the value of this attribute after applying the supplied {@link Converter}
+    * Gives you the value of this attribute after applying the supplied converter
     * 
     * @return the value of this attribute
     */
