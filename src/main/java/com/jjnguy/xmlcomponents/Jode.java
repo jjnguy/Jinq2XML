@@ -96,7 +96,7 @@ public class Jode implements Comparable<Jode> {
       if (polite)
          return null;
       else
-         throw new JinqException("This node didn't containg an attribute with the name: " + name);
+         throw new JinqException("This node didn't contain an attribute with the name: " + name);
    }
    
    /**

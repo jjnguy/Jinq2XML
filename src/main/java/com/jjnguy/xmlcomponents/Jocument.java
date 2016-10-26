@@ -68,13 +68,13 @@ public class Jocument extends Jode {
    /**
     * Creates a Jocument out of a file located at the given URL
     * 
-    * @param fileLocation
+    * @param url
     *           the place to find the XML file
     * @return a Jocument represent the given xml file
     */
-   public static Jocument load(URL in) {
+   public static Jocument load(URL url) {
       try {
-         return load(in.openStream());
+         return load(url.openStream());
       } catch (IOException e) {
          throw new JinqException(e);
       }
@@ -83,13 +83,13 @@ public class Jocument extends Jode {
    /**
     * Creates a Jocument out of a file located at the given URL and makes the given node name the root of the Jocument
     * 
-    * @param fileLocation
+    * @param url
     *           the place to find the XML file
     * @return a Jocument represent the given xml file
     */
-   public static Jode load(URL in, String rootNode) {
+   public static Jode load(URL url, String rootNode) {
       try {
-         return load(in.openStream(), rootNode);
+         return load(url.openStream(), rootNode);
       } catch (IOException e) {
          throw new JinqException(e);
       }
@@ -98,8 +98,8 @@ public class Jocument extends Jode {
    /**
     * Creates a Jocument out of the given stream
     * 
-    * @param fileLocation
-    *           the place to find the XML file
+    * @param in
+    *           the XML file stream
     * @return a Jocument represent the given xml file
     */
    public static Jocument load(InputStream in) {
@@ -113,8 +113,8 @@ public class Jocument extends Jode {
    /**
     * Creates a Jocument out of the given stream and makes the given node name the root of the Jocument
     * 
-    * @param fileLocation
-    *           the place to find the XML file
+    * @param in
+    *           the XML file stream
     * @return a Jocument represent the given xml file
     */
    public static Jode load(InputStream in, String rootNode) {

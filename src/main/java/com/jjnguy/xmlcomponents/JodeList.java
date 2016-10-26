@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,7 +32,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     *           the node list to represent
     */
    public JodeList(NodeList l) {
-      this.nodes = new ArrayList<Node>(l.getLength());
+      this.nodes = new ArrayList<>(l.getLength());
       for (int i = 0; i < l.getLength(); i++) {
          if (!new Jode(l.item(i)).isWhiteSpace()) {
             this.nodes.add(l.item(i));
@@ -58,7 +59,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return a JodeList containing only distinct elements.
     */
    public JodeList distinct(JodeEqualityComparer comparer) {
-      List<Node> results = new ArrayList<Node>();
+      List<Node> results = new ArrayList<>();
       for (Jode j : this) {
          boolean contains = false;
          for (Node alreadyIn : results) {
@@ -99,22 +100,22 @@ public class JodeList implements Iterable<Jode>, NodeList {
    }
 
    /**
-    * Will return a JodeList containing only nodes that matched the filter criteria
-    * 
-    * @param filter
-    *           the filter criteria to use
-    * @return a JodeList containing only nodes that matched the filter criteria
-    */
-   public JodeList filter(final String nodeName) {
-      return this.filter(j -> j.extend().getNodeName().equals(nodeName));
-   }
-
-   /**
     * Will return a JodeList containing only nodes that match the given node name
-    * 
+    *
     * @param nodeName
     *           the name of the nodes we would like to filter by
     * @return JodeList containing only nodes that match the given node name
+    */
+   public JodeList filter(final String nodeName) {
+      return this.filter(j -> j.n.equals(nodeName));
+   }
+
+   /**
+    * Will return a JodeList containing only nodes that matched the filter criteria
+    *
+    * @param filter
+    *           the filter criteria to use
+    * @return a JodeList containing only nodes that matched the filter criteria
     */
    public JodeList filter(Predicate<Jode> filter) {
       return new JodeList(this.nodes.stream()
@@ -180,7 +181,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
 
          @Override
          public void remove() {
-            throw new UnsupportedOperationException("You are not allowed to remove jodes fron a list");
+            throw new UnsupportedOperationException("You are not allowed to remove jodes from a list");
          }
       };
    }
@@ -221,11 +222,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return the single node matching the given name
     */
    public Jode single(String nodeName) {
-      JodeList resultList = this.filter(nodeName);
-      if (resultList.getLength() != 1) {
-         throw new JinqException("The call to 'single' " + nodeName + " did not return 1 result.  It returned " + resultList.getLength() + " items.");
-      }
-      return resultList.get(0);
+      return single(n -> n.n.equals(nodeName));
    }
 
    /**
@@ -252,19 +249,22 @@ public class JodeList implements Iterable<Jode>, NodeList {
    }
 
    /**
-    * Sorts this list by Node name
+    * Returns a new sorted {@link JodeList} by Node name
     */
-   public void sort() {
-      sort((j1, j2) -> j1.name().compareTo(j2.name()));
+   public JodeList sort() {
+      return sort((j1, j2) -> j1.name().compareTo(j2.name()));
    }
 
    /**
-    * Sorts this list in place using the given Comparator
+    * Returns a new sorted {@link JodeList} using the given Comparator
     */
-   public void sort(final Comparator<Jode> comparator) {
+   public JodeList sort(final Comparator<Jode> comparator) {
       Comparator<Node> alteredComparator = 
             (n1, n2) -> comparator.compare(new Jode(n1), new Jode(n2));
-      Collections.sort(nodes, alteredComparator);
+      List<Node> copy = new ArrayList<>(nodes.size());
+      nodes.forEach(n -> copy.add(n));
+      Collections.sort(copy, alteredComparator);
+      return new JodeList(copy);
    }
 
    /**
@@ -275,12 +275,7 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * @return a List<T> of elements that were created from this JodeList
     */
    public <T> List<T> xform(Function<Jode, T> xform) {
-      List<T> ret = new ArrayList<T>(this.size());
-      // For each element in this Jode list, apply the transform
-      for (Jode j : this) {
-         ret.add(xform.apply(j));
-      }
-      return ret;
+      return this.nodes.stream().map(n -> xform.apply(new Jode(n))).collect(Collectors.toList());
    }
 
    @Override
