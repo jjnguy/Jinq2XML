@@ -120,15 +120,28 @@ public class Jocument extends Jode {
    public static Jode load(InputStream in, String rootNode) {
       return load(in).single(rootNode);
    }
-   
+
    /**
     * Parses a given xml string into a Jocument
-    * 
+    *
     * @param xml
     *           the XML to parse
     * @return a Jocument representing the XML text
     */
    public static Jocument parse(String xml) {
       return Jocument.load(new ByteArrayInputStream(xml.getBytes()));
+   }
+
+   /**
+    * Parses a given xml string into a Jocument
+    *
+    * @param xml
+    *           the XML to parse
+    * @param rootNodeName
+    *          the name of the root node of the document
+    * @return a Jocument representing the XML text
+    */
+   public static Jode parse(String xml, String rootNodeName) {
+      return Jocument.load(new ByteArrayInputStream(xml.getBytes()), rootNodeName);
    }
 }
