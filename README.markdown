@@ -29,6 +29,8 @@ Those are the main features of the library.  Any requests for more functionality
 
 To begin call `Jocument.load()` and either give it an `InputStream` or a file location, or use `Jocument.parse()` and give it a `String` containing valid XML.  Then start calling methods on the `Jocument`.  Everything should 'just work' without any configuration or setup.
 
+Your IDE (and the fluent style syntax) should help once you have a `Jocument` to start with. But, if you'd like some more examples [they can be found under the tests folder.](https://github.com/jjnguy/Jinq2XML/tree/master/tests/examples)
+
 ##More Info!
 
 Jinq2XML is essentially a wrapper around Java's built-in DOM XML parser.  All Jinq objects are backed by Java's DOM objects. (i.e Jocument is backed by a Document)
