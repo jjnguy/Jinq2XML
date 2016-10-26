@@ -1,8 +1,8 @@
 package examples;
 
-import xmlcomponents.Jocument;
-import xmlcomponents.Jode;
-import xmlcomponents.JodeList;
+import com.jjnguy.xmlcomponents.Jocument;
+import com.jjnguy.xmlcomponents.Jode;
+import com.jjnguy.xmlcomponents.JodeList;
 
 public class LittleMoreComplicated1_IterateNonFiction {
    public static void main(String[] args) {

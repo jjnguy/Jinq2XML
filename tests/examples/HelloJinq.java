@@ -1,7 +1,7 @@
 package examples;
 
-import xmlcomponents.Jocument;
-import xmlcomponents.Jode;
+import com.jjnguy.xmlcomponents.Jocument;
+import com.jjnguy.xmlcomponents.Jode;
 
 public class HelloJinq {
    public static void main(String[] args) {

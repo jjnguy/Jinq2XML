@@ -2,9 +2,9 @@ package examples;
 
 import java.util.List;
 
-import xmlcomponents.Jocument;
-import xmlcomponents.Jode;
-import xmlcomponents.JodeList;
+import com.jjnguy.xmlcomponents.Jocument;
+import com.jjnguy.xmlcomponents.Jode;
+import com.jjnguy.xmlcomponents.JodeList;
 
 public class LittleMoreComplicated2_AttrsAndXFormers {
    static class Item {
