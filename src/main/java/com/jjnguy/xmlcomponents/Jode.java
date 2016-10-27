@@ -235,18 +235,26 @@ public class Jode implements Comparable<Jode> {
       }
       return new JodeList(ret);
    }
-   
+
    /**
     * If this node has one child, this will give you that child. Otherwise it will throw a new exception.
-    * 
+    *
     * @return the only child of this Jode
     */
    public Jode single() {
-      JodeList children = children();
-      // Check to make sure we actually only have 1 child
-      if (children.size() != 1)
-         throw new JinqException("Call to single() did not return a single result");
-      return this.children().first();
+      return single(false);
+   }
+
+   /**
+    * If this node has one child, this will give you that child. Otherwise it will throw a new exception.
+    *
+    * @param polite
+    *       If polite returns null of no children are found
+    *
+    * @return the only child of this Jode
+    */
+   public Jode single(boolean polite) {
+      return this.children().single(polite);
    }
    
    /**

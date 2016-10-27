@@ -216,13 +216,46 @@ public class JodeList implements Iterable<Jode>, NodeList {
 
    /**
     * Will return the only element of this list with the given node name. If there is more than one matching element, this will throw an {@link JinqException}.
-    * 
+    *
+    * @param nodeName
+    *           the name of the node to return
+    * @param polite
+    *           whether or not to be polite
+    * @return the single node matching the given name
+    */
+   public Jode single(String nodeName, boolean polite) {
+      return single(n -> n.n.equals(nodeName), polite);
+   }
+
+   /**
+    * Will return the only element of this list with the given node name. If there is more than one matching element, this will throw an {@link JinqException}.
+    *
     * @param nodeName
     *           the name of the node to return
     * @return the single node matching the given name
     */
    public Jode single(String nodeName) {
-      return single(n -> n.n.equals(nodeName));
+      return single(nodeName, false);
+   }
+
+   /**
+    * Will return the only element of this list. If there is more than one element, this will throw an {@link JinqException}.
+    *
+    * @param polite
+    *           whether or not to be polite
+    * @return the single node matching the given name
+    */
+   public Jode single(boolean polite) {
+      return single(n -> true, polite);
+   }
+
+   /**
+    * Will return the only element of this list. If there is more than one element, this will throw an {@link JinqException}.
+    *
+    * @return the single node matching the given name
+    */
+   public Jode single() {
+      return single(false);
    }
 
    /**
@@ -230,13 +263,34 @@ public class JodeList implements Iterable<Jode>, NodeList {
     * 
     * @param filter
     *           the filter to apply to this list
+    * @param polite
+    *             if true - returns null if single does not result in any nodes. Otherwise throws an exception.
+    * @return the single node matching this filter
+    */
+   public Jode single(Predicate<Jode> filter, boolean polite) {
+      JodeList lst = this.filter(filter);
+
+      if (lst.getLength() > 1)
+         throw new JinqException("The call to 'single' returned more than 1 result.");
+
+      if (!polite && lst.getLength() == 0)
+         throw new JinqException("The call to 'single' returned 0 results.");
+
+      if (lst.getLength() == 0)
+         return null;
+
+      return lst.get(0);
+   }
+
+   /**
+    * Will give you to single element of this list matching a given name. If there is more than one matching element, this will throw an {@link JinqException}.
+    *
+    * @param filter
+    *           the filter to apply to this list
     * @return the single node matching this filter
     */
    public Jode single(Predicate<Jode> filter) {
-      JodeList lst = this.filter(filter);
-      if (lst.getLength() != 1)
-         throw new JinqException("The call to 'single' did not return 1 result.");
-      return lst.get(0);
+      return single(filter, false);
    }
 
    /**
